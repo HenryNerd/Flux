@@ -1,4 +1,5 @@
 import redis
+from datetime import datetime
 
 print('Battery Event Recorder')
 print('1: Battery Recived')
@@ -39,5 +40,16 @@ elif choice == '2':
     except:
         print("An exception occurred") 
     print()
-    mesuredah = input("Amps")
-
+    mesuredAh = input("Amps: ")
+    measuredWh = input("Watts: ")
+    testTime = input("Time: ")
+    fileName = input("File Name")
+    now = datetime.now()
+    timestamp = now
+    events = redis.Redis(host='localhost', port=6969, decode_responses=True)
+    events.hset('0002-'+batterySearch+'-'+timestamp, mapping={
+    'name': 'John',
+    "surname": 'Smith',
+    "company": 'Redis',
+    "age": 29
+    })
