@@ -29,9 +29,24 @@ interface BatteryData {
     capacity: string
 }
 
+
 export default function BatteryCard({ battery }: { battery: string }) {
     const [data, setData] = useState<BatteryData | null>(null)
     const [loading, setLoading] = useState(true)
+    const [mesuredAh, setMesuredAh] = useState('');
+    const [mesuredWh, setMesuredWh] = useState('');
+    const [testTime, setTestTime] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        console.log('Form submitted:', { mesuredAh, mesuredWh, testTime })
+        const formData = {
+            battery: battery,
+            mesuredAh: mesuredAh,
+            mesuredWh: mesuredWh,
+            testTime: testTime
+        }
+    }
 
     useEffect(() => {
         fetch(`/api/battery/${battery}`)
@@ -70,23 +85,25 @@ export default function BatteryCard({ battery }: { battery: string }) {
                             <SheetHeader>
                                 <SheetTitle className="text-center">Add Discharge Test</SheetTitle>
                             </SheetHeader>
-                            <div className="m-2">
-                                <div className='mt-3'>
-                                    <Label className="mb-3" htmlFor="ah">Measured Ah</Label>
-                                    <Input id="ah" />
+                            <form onSubmit={handleSubmit}>
+                                <div className="m-2">
+                                    <div className='mt-3'>
+                                        <Label className="mb-3" htmlFor="ah">Measured Ah</Label>
+                                        <Input value={mesuredAh} onChange={(e) => setMesuredAh(e.target.value)} id="ah" />
+                                    </div>
+                                    <div className='mt-3'>
+                                        <Label className="mb-3" htmlFor="wh">Measured Wh</Label>
+                                        <Input value={mesuredWh} onChange={(e) => setMesuredWh(e.target.value)} id="wh" />
+                                    </div>
+                                    <div className='mt-3'>
+                                        <Label className="mb-3" htmlFor="time">Test Time</Label>
+                                        <Input value={testTime} onChange={(e) => setTestTime(e.target.value)} id="time" placeholder="H:MM:SS" />
+                                    </div>
                                 </div>
-                                <div className='mt-3'>
-                                    <Label className="mb-3" htmlFor="wh">Measured Wh</Label>
-                                    <Input id="wh" />
-                                </div>
-                                <div className='mt-3'>
-                                    <Label className="mb-3" htmlFor="time">Test Time</Label>
-                                    <Input id="time" placeholder="H:MM:SS" />
-                                </div>
-                            </div>
+                            </form>
                             <SheetFooter>
                                 <SheetClose asChild>
-                                    <Button>Add Event</Button>
+                                    <Button type='submit'>Add Event</Button>
                                 </SheetClose>
                             </SheetFooter>
                         </SheetContent>
