@@ -37,15 +37,36 @@ export default function BatteryCard({ battery }: { battery: string }) {
     const [mesuredWh, setMesuredWh] = useState('');
     const [testTime, setTestTime] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         console.log('Form submitted:', { mesuredAh, mesuredWh, testTime })
+
         const formData = {
             battery: battery,
             mesuredAh: mesuredAh,
             mesuredWh: mesuredWh,
             testTime: testTime
         }
+
+        try {
+            const response = await fetch(`/api/dischargeTest/${battery}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+
+            const result = await response.json()
+            console.log('Success:', result)
+
+        } catch (error) {
+            console.error('Error:', error)
+        }
+
+        setMesuredAh('');
+        setMesuredWh('');
+        setTestTime('');
     }
 
     useEffect(() => {
@@ -100,12 +121,12 @@ export default function BatteryCard({ battery }: { battery: string }) {
                                         <Input value={testTime} onChange={(e) => setTestTime(e.target.value)} id="time" placeholder="H:MM:SS" />
                                     </div>
                                 </div>
+                                <SheetFooter>
+                                    <SheetClose asChild>
+                                        <Button type='submit'>Add Event</Button>
+                                    </SheetClose>
+                                </SheetFooter>
                             </form>
-                            <SheetFooter>
-                                <SheetClose asChild>
-                                    <Button type='submit'>Add Event</Button>
-                                </SheetClose>
-                            </SheetFooter>
                         </SheetContent>
                     </Sheet>
                 </CardFooter>
