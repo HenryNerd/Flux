@@ -20,7 +20,7 @@ export async function GET(
     return Response.json({
       key: id,
       season: data.season,
-      mounth: data.mounth,
+      month: data.month,
       friendlyName: data.friendlyName,
       batteryID: data.batteryID,
       capacity: data.capacity

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
     Card,
+    CardAction,
     CardContent,
     CardDescription,
     CardFooter,
@@ -20,6 +21,8 @@ import {
 } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface BatteryData {
     season: string
@@ -36,6 +39,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
     const [mesuredAh, setMesuredAh] = useState('');
     const [mesuredWh, setMesuredWh] = useState('');
     const [testTime, setTestTime] = useState('');
+    const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -86,6 +90,12 @@ export default function BatteryCard({ battery }: { battery: string }) {
     if (loading) return <div>Loading...</div>
     if (!data) return <div>No data</div>
 
+    
+    const handleClick = (batteryId: string) => {
+        router.push(`/battery/${batteryId}`)
+    }
+    
+
     return (
         <div>
             <Card className="m-3">
@@ -96,6 +106,9 @@ export default function BatteryCard({ battery }: { battery: string }) {
                     <CardDescription className="text-gray-500">
                         {data.mounth} {data.season} | {data.batteryID}
                     </CardDescription>
+                    <CardAction onClick={() => handleClick(battery)}>
+                        <Button className="bg-slate-200" variant="outline">Open</Button>
+                    </CardAction>
                 </CardHeader>
                 <CardFooter>
                     <Sheet>
@@ -129,6 +142,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
                             </form>
                         </SheetContent>
                     </Sheet>
+                    <Button className='ml-2'>Deploy</Button>
                 </CardFooter>
             </Card>
         </div>
