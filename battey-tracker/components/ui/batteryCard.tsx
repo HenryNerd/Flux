@@ -22,11 +22,10 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 interface BatteryData {
     season: string
-    mounth: string
+    month: string
     friendlyName: string
     batteryID: string
     capacity: string
@@ -104,7 +103,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
                         {data.friendlyName || 'Battery'}
                     </CardTitle>
                     <CardDescription className="text-gray-500">
-                        {data.mounth} {data.season} | {data.batteryID}
+                        {data.month} {data.season} | {data.batteryID}
                     </CardDescription>
                     <CardAction onClick={() => handleClick(battery)}>
                         <Button className="bg-slate-200" variant="outline">Open</Button>
@@ -117,7 +116,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
                         </SheetTrigger>
                         <SheetContent>
                             <SheetHeader>
-                                <SheetTitle className="text-center">Add Discharge Test</SheetTitle>
+                                <SheetTitle className="text-center">Add Discharge Test For {data.friendlyName}</SheetTitle>
                             </SheetHeader>
                             <form onSubmit={handleSubmit}>
                                 <div className="m-2">
