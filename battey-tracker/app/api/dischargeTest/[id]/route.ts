@@ -14,6 +14,8 @@ export async function POST(
 
     let currentTime = new Date().toISOString()
 
+    const timestamp = new Date().toISOString();
+
     const client = createClient({
         url: "redis://127.0.0.1:6969",
     });
@@ -26,7 +28,7 @@ export async function POST(
             mesuredAh,
             mesuredWh,
             testTime,
-            timestamp: currentTime,
+            timestamp: timestamp,
         });
 
         await client.quit();
