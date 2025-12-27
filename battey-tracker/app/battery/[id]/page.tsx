@@ -58,12 +58,12 @@ export default async function BatteryPage({
                             <p>{batteryData.month} {batteryData.season} | {batteryData.batteryID}</p>
                             <div className="mt-3">
                                 <DichargeTest battery={id}></DichargeTest>
-                                <Button className="ml-2">Deploy</Button>
-                                <Button className="ml-2">Post Match</Button>
-                                <Button className="ml-2">Charger</Button>
+                                <Button className="ml-2" disabled>Deploy</Button>
+                                <Button className="ml-2" disabled>Post Match</Button>
+                                <Button className="ml-2" disabled>Charger</Button>
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <Button variant="destructive" className="ml-2 bg-red-500">Deprecate</Button>
+                                        <Button variant="destructive" className="ml-2 bg-red-500" disabled>Deprecate</Button>
                                     </DialogTrigger>
                                     <DialogContent>
                                         <DialogHeader>

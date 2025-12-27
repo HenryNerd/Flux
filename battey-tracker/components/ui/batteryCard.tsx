@@ -141,7 +141,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
                             </form>
                         </SheetContent>
                     </Sheet>
-                    <Button className='ml-2'>Deploy</Button>
+                    <Button className='ml-2' disabled>Deploy</Button>
                 </CardFooter>
             </Card>
         </div>
