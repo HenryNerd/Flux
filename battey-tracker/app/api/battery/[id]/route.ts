@@ -5,13 +5,12 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params 
-  
   const client = createClient({
     url: "redis://127.0.0.1:6969",
   });
-
+  
   await client.connect();
-
+  
   try {
     const data = await client.hGetAll(id);
     console.log('Fetching key:', id);
@@ -19,11 +18,7 @@ export async function GET(
     
     return Response.json({
       key: id,
-      season: data.season,
-      month: data.month,
-      friendlyName: data.friendlyName,
-      batteryID: data.batteryID,
-      capacity: data.capacity
+      ...data
     });
   } catch (error) {
     console.error("Redis Error", error);

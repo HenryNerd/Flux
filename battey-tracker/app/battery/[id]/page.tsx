@@ -5,42 +5,67 @@ import DichargeTest from "@/components/ui/dischargeTestSheet"
 import EventCard from "@/components/ui/eventCard"
 
 export default async function BatteryPage({
-    params
+  params
 }: {
-    params: Promise<{ id: string }>
+  params: Promise<{ id: string }>
 }) {
-    const { id } = await params
-
-    const batteryId = id.split('-')[1];
-
-    const res = await fetch(`http://localhost:3000/api/battery/${id}`, {
-        cache: 'no-store'
+  const { id } = await params
+  const batteryId = id.split('-')[1];
+  
+  const res = await fetch(`http://localhost:3000/api/battery/${id}`, {
+    cache: 'no-store'
+  })
+  const batteryData = await res.json()
+  
+  let sortedKeys: string[] = [];
+  
+  try {
+    const eventsRes = await fetch(`http://localhost:3000/api/batteryEvents/${batteryId}`, {
+      cache: 'no-store'
     })
-    const batteryData = await res.json()
+    
+    if (!eventsRes.ok) {
+      console.error('Failed to fetch events:', eventsRes.status);
+    } else {
+      const eventsData = await eventsRes.json()
+      sortedKeys = eventsData.keys?.sort((a: string, b: string) => {
+        return b.localeCompare(a);
+      }) || [];
+    }
+  } catch (error) {
+    console.error('Error fetching events:', error);
+  }
 
-    return (
-        <div>
-            <Navbar />
-            <div className="mx-3 mt-4">
-                <Card className="">
-                    <CardContent>
-                        <h1 className="text-red-300 text-3xl font-bold mb-2">{batteryData.friendlyName || id}</h1>
-                        <div>
-                            <p>{batteryData.month} {batteryData.season} | {batteryData.batteryID}</p>
-                            <div className="mt-3">
-                                <DichargeTest battery={id}></DichargeTest>
-                                <Button className="ml-2">Deploy</Button>
-                                <Button className="ml-2">Post Match</Button>
-                                <Button className="ml-2">Charger</Button>
-                                <Button variant="destructive" className="ml-2 bg-red-500">Depricate</Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <EventCard id={"0003-"+batteryId}></EventCard>
-                <EventCard id={"0002-"+batteryId}></EventCard>
-                <EventCard id={"0001-"+batteryId}></EventCard>
+  return (
+    <div>
+      <Navbar />
+      <div className="mx-3 mt-4">
+        <Card className="">
+          <CardContent>
+            <h1 className="text-red-300 text-3xl font-bold mb-2">
+              {batteryData.friendlyName || id}
+            </h1>
+            <div>
+              <p>{batteryData.month} {batteryData.season} | {batteryData.batteryID}</p>
+              <div className="mt-3">
+                <DichargeTest battery={id}></DichargeTest>
+                <Button className="ml-2">Deploy</Button>
+                <Button className="ml-2">Post Match</Button>
+                <Button className="ml-2">Charger</Button>
+                <Button variant="destructive" className="ml-2 bg-red-500">Depricate</Button>
+              </div>
             </div>
-        </div>
-    )
+          </CardContent>
+        </Card>
+        
+        {sortedKeys.length > 0 ? (
+          sortedKeys.map((eventKey: string) => (
+            <EventCard key={eventKey} id={eventKey} />
+          ))
+        ) : (
+          <p className="mt-4 text-gray-500">No events found for this battery</p>
+        )}
+      </div>
+    </div>
+  )
 }

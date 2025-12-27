@@ -6,23 +6,17 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
+  
   const client = createClient({
     url: "redis://127.0.0.1:6969",
   });
 
   try {
     await client.connect();
-    
-    const keys = await client.keys(`*${id}*`);
-    console.log(keys);
-    
+    const data = await client.hGetAll(`${id}`);
     await client.quit();
     
-    return NextResponse.json({
-      success: true,
-      keys: keys,
-      id: id
-    });
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Redis error:", error);
     if (client.isOpen) {
