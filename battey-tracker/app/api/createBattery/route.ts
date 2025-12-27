@@ -10,12 +10,7 @@ export async function POST(request: Request) {
   const batteryKey = `0001-${nfc}`;
   
   const client = createClient({
-    username: "default",
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-      host: process.env.REDIS_HOST || "redis-17916.c1.us-central1-2.gce.cloud.redislabs.com",
-      port: Number(process.env.REDIS_PORT) || 17916,
-    },
+    url: "redis://127.0.0.1:6969",
   });
 
   try {
