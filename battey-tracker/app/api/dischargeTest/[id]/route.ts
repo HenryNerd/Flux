@@ -1,6 +1,5 @@
 import { createClient } from "redis";
 import { NextResponse } from "next/server";
-import { timeStamp } from "console";
 
 export async function POST(
     request: Request,
@@ -12,18 +11,23 @@ export async function POST(
 
     let realBatteryID = id.replace("0001-", "");
 
-    let currentTime = new Date().toISOString()
-
     const timestamp = new Date().toISOString();
+    const sanitizedTimestamp = timestamp.replace(/[:.]/g, '-');
 
     const client = createClient({
-        url: "redis://127.0.0.1:6969",
+        username: "default",
+        password: process.env.REDIS_PASSWORD,
+        socket: {
+            host: process.env.REDIS_HOST || "redis-17916.c1.us-central1-2.gce.cloud.redislabs.com",
+            port: Number(process.env.REDIS_PORT) || 17916,
+        },
     });
 
     try {
         await client.connect();
 
-        await client.hSet(`0002-${realBatteryID}-${currentTime}`, {
+        await client.hSet(`0002-${realBatteryID}-${sanitizedTimestamp}`, {
+            eventType: 'Discharge Test',
             battery,
             mesuredAh,
             mesuredWh,
