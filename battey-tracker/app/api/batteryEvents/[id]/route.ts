@@ -7,7 +7,12 @@ export async function GET(
 ) {
   const { id } = await context.params;
   const client = createClient({
-    url: "redis://127.0.0.1:6969",
+    username: 'default',
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT)
+    }
   });
 
   try {

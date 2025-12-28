@@ -2,7 +2,12 @@ import { createClient } from "redis";
 
 export async function GET() {
   const client = createClient({
-    url: "redis://127.0.0.1:6969",
+    username: 'default',
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT)
+    }
   });
 
   await client.connect();
@@ -10,7 +15,7 @@ export async function GET() {
   try {
     const matchingKeys = [];
     for await (const key of client.scanIterator({
-      MATCH: '*0001*',
+      MATCH: '0001-*',
       TYPE: 'hash'
     })) {
       matchingKeys.push(key);

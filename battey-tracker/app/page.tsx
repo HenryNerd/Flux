@@ -88,7 +88,7 @@ export default function Home() {
     <div className="bg-white min-h-screen">
       <Navbar></Navbar>
       <Sheet>
-        <SheetTrigger>
+        <SheetTrigger asChild>
           <Button className="bg-slate-200 mt-4 mb-5 ml-4" variant="outline">New Battery</Button>
         </SheetTrigger>
         <SheetContent>
@@ -109,7 +109,7 @@ export default function Home() {
               <Label htmlFor="capacity">Battery Capaciy (Ah): </Label>
               <Input value={capacity} onChange={(e) => setcapacity(e.target.value)} id="capacity"></Input>
               
-              <SheetClose>
+              <SheetClose asChild>
                 <Button type='submit' variant="outline" className="bg-slate-200 mt-4 w-full">Add Battery</Button>
               </SheetClose>
             </form>
