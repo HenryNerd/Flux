@@ -106,13 +106,9 @@ export default function Home() {
           <DrawerTitle>Qr Code Scaner</DrawerTitle>
           <Scanner
             onScan={(result) => console.log(result)}
-            onError={(error) => console.log(error?.message)}
             components={{
-              audio: true,
-              onOff: false,
               torch: true,
               zoom: true,
-              finder: true, 
             }}
           />
         </DrawerContent>
