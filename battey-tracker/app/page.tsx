@@ -3,7 +3,7 @@ import BatteryCard from "@/components/ui/batteryCard";
 import { useEffect, useState } from 'react'
 import Navbar from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation'; // Add this import
+import { useRouter } from 'next/navigation';
 import {
   Sheet,
   SheetClose,
@@ -16,6 +16,17 @@ import {
 } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Scanner } from '@yudiel/react-qr-scanner';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 export default function Home() {
   const router = useRouter(); // Add this
@@ -42,7 +53,7 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     console.log('Form submitted:', { season, mounth, name, nfc, capacity })
-    
+
     const formData = {
       season: season,
       mounth: mounth,
@@ -59,16 +70,16 @@ export default function Home() {
         },
         body: JSON.stringify(formData)
       })
-      
+
       const result = await response.json()
       console.log('Success:', result)
-      
+
       setseason('');
       setmounth('');
       setname('');
       setnfc('');
       setcapacity('');
-      
+
       fetch('/api/getBattries')
         .then(res => res.json())
         .then(data => {
@@ -87,6 +98,25 @@ export default function Home() {
   return (
     <div className="bg-white min-h-screen">
       <Navbar></Navbar>
+      <Drawer>
+        <DrawerTrigger>
+          <Button>QR Code Scanner</Button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerTitle>Qr Code Scaner</DrawerTitle>
+          <Scanner
+            onScan={(result) => console.log(result)}
+            onError={(error) => console.log(error?.message)}
+            components={{
+              audio: true,
+              onOff: false,
+              torch: true,
+              zoom: true,
+              finder: true, 
+            }}
+          />
+        </DrawerContent>
+      </Drawer>
       <Sheet>
         <SheetTrigger asChild>
           <Button className="bg-slate-200 mt-4 mb-5 ml-4" variant="outline">New Battery</Button>
@@ -96,19 +126,19 @@ export default function Home() {
             <form onSubmit={handleSubmit}>
               <Label htmlFor="season">Season Purchased: </Label>
               <Input value={season} onChange={(e) => setseason(e.target.value)} id="season"></Input>
-              
+
               <Label htmlFor="mounth">Mounth Purchased: </Label>
               <Input value={mounth} onChange={(e) => setmounth(e.target.value)} id="mounth"></Input>
-              
+
               <Label htmlFor="name">Battery Name: </Label>
               <Input value={name} onChange={(e) => setname(e.target.value)} id="name"></Input>
-              
+
               <Label htmlFor="nfc">NFC Tag: </Label>
               <Input value={nfc} onChange={(e) => setnfc(e.target.value)} id="nfc"></Input>
-              
+
               <Label htmlFor="capacity">Battery Capaciy (Ah): </Label>
               <Input value={capacity} onChange={(e) => setcapacity(e.target.value)} id="capacity"></Input>
-              
+
               <SheetClose asChild>
                 <Button type='submit' variant="outline" className="bg-slate-200 mt-4 w-full">Add Battery</Button>
               </SheetClose>
