@@ -14,3 +14,11 @@ mesuredAh - From Test Data
 mesuredWh - From Test Data
 testTime - From Test Data
 timestamp - timestamp of the event being taken
+
+## 9998 User
+username - Identifyer of the user and how a user logs in
+firstName - The user's first name
+lastName - The user's last name
+timestamp - timestamp of the user being created
+
+## 9999 Depricate Battery
