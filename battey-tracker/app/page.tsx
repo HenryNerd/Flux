@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/drawer"
 
 export default function Home() {
-  const router = useRouter(); // Add this
+  const router = useRouter();
   const [keys, setKeys] = useState([])
   const [loading, setLoading] = useState(true)
   const [season, setseason] = useState('');
