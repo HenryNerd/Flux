@@ -15,7 +15,7 @@ export default async function EventCard({ id, realCapacity }: { id: string, real
     console.log(id)
     console.log(result)
     
-    const rawEventData = await fetch(`http://localhost:3000/api/battery/${id}`, {
+    const rawEventData = await fetch(`/api/battery/${id}`, {
         cache: 'no-store'
     });
     eventData = await rawEventData.json();

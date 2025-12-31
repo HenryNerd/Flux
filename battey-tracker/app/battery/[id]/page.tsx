@@ -21,7 +21,7 @@ export default async function BatteryPage({
     const { id } = await params
     const batteryId = id.split('-')[1];
 
-    const res = await fetch(`http://localhost:3000/api/battery/${id}`, {
+    const res = await fetch(`/api/battery/${id}`, {
         cache: 'no-store'
     })
     const batteryData = await res.json()
@@ -29,7 +29,7 @@ export default async function BatteryPage({
     let sortedKeys: string[] = [];
 
     try {
-        const eventsRes = await fetch(`http://localhost:3000/api/batteryEvents/${batteryId}`, {
+        const eventsRes = await fetch(`/api/batteryEvents/${batteryId}`, {
             cache: 'no-store'
         })
 
