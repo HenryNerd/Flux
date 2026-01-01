@@ -1,4 +1,4 @@
-# 1306 Battery Tracker
+# Flux Battery Tracker
 
 ## To Do
  - [x] Dischage Test
