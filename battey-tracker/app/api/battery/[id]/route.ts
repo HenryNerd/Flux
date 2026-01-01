@@ -1,10 +1,10 @@
 import { createClient } from "redis";
 
 export async function GET(
-  _: Request,
+  request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params 
+  const { id } = await context.params;
   const client = createClient({
     username: 'default',
     password: process.env.REDIS_PASSWORD,
@@ -13,22 +13,22 @@ export async function GET(
       port: Number(process.env.REDIS_PORT)
     }
   });
-  
+
   await client.connect();
-  
+
   try {
     const data = await client.hGetAll(id);
     console.log('Fetching key:', id);
     console.log('Data received:', data);
-    
-    return Response.json({
+
+    return new Response(JSON.stringify({
       key: id,
       ...data
-    });
+    }), { status: 200 });
   } catch (error) {
     console.error("Redis Error", error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return Response.json({ error: errorMessage }, { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
   } finally {
     await client.quit();
   }
