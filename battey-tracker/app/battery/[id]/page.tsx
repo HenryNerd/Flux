@@ -20,19 +20,21 @@ export default async function BatteryPage({
 }) {
     const { id } = await params
     const batteryId = id.split('-')[1];
-
-    const res = await fetch(`/api/battery/${id}`, {
+    
+    const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : 'http://localhost:3000';
+    
+    const res = await fetch(`${baseUrl}/api/battery/${id}`, {
         cache: 'no-store'
     })
     const batteryData = await res.json()
-
+    
     let sortedKeys: string[] = [];
-
     try {
-        const eventsRes = await fetch(`/api/batteryEvents/${batteryId}`, {
+        const eventsRes = await fetch(`${baseUrl}/api/batteryEvents/${batteryId}`, {
             cache: 'no-store'
         })
-
         if (!eventsRes.ok) {
             console.error('Failed to fetch events:', eventsRes.status);
         } else {
@@ -44,7 +46,7 @@ export default async function BatteryPage({
     } catch (error) {
         console.error('Error fetching events:', error);
     }
-
+    
     return (
         <div>
             <Navbar />
@@ -83,7 +85,6 @@ export default async function BatteryPage({
                         </div>
                     </CardContent>
                 </Card>
-
                 {sortedKeys.length > 0 ? (
                     sortedKeys.map((eventKey: string) => (
                         <EventCard key={eventKey} id={eventKey} realCapacity={batteryData.capacity} />
