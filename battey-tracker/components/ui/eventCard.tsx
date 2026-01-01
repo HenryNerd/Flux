@@ -11,11 +11,14 @@ export default async function EventCard({ id, realCapacity }: { id: string, real
     let eventData = null;
     let capacity;
     let parsedCapacity = parseInt(realCapacity, 10);
-    
     console.log(id)
     console.log(result)
     
-    const rawEventData = await fetch(`/api/battery/${id}`, {
+    const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : 'http://localhost:3000';
+    
+    const rawEventData = await fetch(`${baseUrl}/api/battery/${id}`, {
         cache: 'no-store'
     });
     eventData = await rawEventData.json();
