@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import DichargeTest from "@/components/ui/dischargeTestSheet"
 import EventCard from "@/components/ui/eventCard"
+import { getBatteryData, getBatteryEvents } from "@/lib/redis"
 import {
     Dialog,
     DialogContent,
@@ -20,33 +21,10 @@ export default async function BatteryPage({
 }) {
     const { id } = await params
     const batteryId = id.split('-')[1];
-    
-    const baseUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : 'http://localhost:3000';
-    
-    const res = await fetch(`${baseUrl}/api/battery/${id}`, {
-        cache: 'no-store'
-    })
-    const batteryData = await res.json()
-    
-    let sortedKeys: string[] = [];
-    try {
-        const eventsRes = await fetch(`${baseUrl}/api/batteryEvents/${batteryId}`, {
-            cache: 'no-store'
-        })
-        if (!eventsRes.ok) {
-            console.error('Failed to fetch events:', eventsRes.status);
-        } else {
-            const eventsData = await eventsRes.json()
-            sortedKeys = eventsData.keys?.sort((a: string, b: string) => {
-                return b.localeCompare(a);
-            }) || [];
-        }
-    } catch (error) {
-        console.error('Error fetching events:', error);
-    }
-    
+
+    const batteryData = await getBatteryData(id);
+    const sortedKeys = await getBatteryEvents(batteryId);
+
     return (
         <div>
             <Navbar />

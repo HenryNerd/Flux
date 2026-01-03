@@ -38,10 +38,16 @@ export default function DischargeTest({ battery }: { battery: string }) {
     const [mesuredAh, setMesuredAh] = useState('');
     const [mesuredWh, setMesuredWh] = useState('');
     const [testTime, setTestTime] = useState('');
+    const [sheetOpen, setSheetOpen] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log('Form submitted:', { mesuredAh, mesuredWh, testTime })
+        
+        if (!mesuredAh || !mesuredWh || !testTime) {
+            console.error('Please fill in all fields');
+            return;
+        }
 
         const formData = {
             battery: battery,
@@ -59,12 +65,19 @@ export default function DischargeTest({ battery }: { battery: string }) {
                 body: JSON.stringify(formData)
             })
 
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+
             const result = await response.json()
             console.log('Success:', result)
 
+            // Reset form and close modal
             setMesuredAh('');
             setMesuredWh('');
             setTestTime('');
+            setSheetOpen(false);
+            setDrawerOpen(false);
 
         } catch (error) {
             console.error('Error:', error)
@@ -73,11 +86,13 @@ export default function DischargeTest({ battery }: { battery: string }) {
 
     useEffect(() => {
         fetch(`/api/battery/${battery}`)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+                return res.json();
+            })
             .then(batteryData => {
                 setData(batteryData)
                 setLoading(false)
-                console.log(batteryData)
             })
             .catch(error => {
                 console.error('Error fetching battery:', error)
@@ -88,7 +103,7 @@ export default function DischargeTest({ battery }: { battery: string }) {
     return (
         <div>
             <div className="block md:hidden">
-                <Drawer>
+                <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
                     <DrawerTrigger asChild>
                         <Button>Discharge Test</Button>
                     </DrawerTrigger>
@@ -136,7 +151,7 @@ export default function DischargeTest({ battery }: { battery: string }) {
                 </Drawer>
             </div>
             <div className="hidden md:block">
-                <Sheet>
+                <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                     <SheetTrigger asChild>
                         <Button>Discharge Test</Button>
                     </SheetTrigger>

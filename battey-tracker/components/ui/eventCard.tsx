@@ -4,31 +4,25 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { getBatteryData } from "@/lib/redis"
 
 export default async function EventCard({ id, realCapacity }: { id: string, realCapacity: string }) {
     const result = id.split('-')[0];
     let eventName;
-    let eventData = null;
     let capacity;
     let parsedCapacity = parseInt(realCapacity, 10);
-    console.log(id)
-    console.log(result)
     
-    const baseUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : 'http://localhost:3000';
+    const eventData = await getBatteryData(id);
     
-    const rawEventData = await fetch(`${baseUrl}/api/battery/${id}`, {
-        cache: 'no-store'
-    });
-    eventData = await rawEventData.json();
-    console.log("Event data fetched:", eventData);
+    console.log("EventCard ID:", id);
+    console.log("EventCard data:", eventData);
     
     if (result == "0001") {
         eventName = "Battery Created"
     } else if (result == "0002") {
         eventName = "Discharge Test"
-        capacity = ((eventData.mesuredAh) / parsedCapacity * 100).toFixed(1)
+        const measuredAh = parseFloat(eventData.mesuredAh || '0');
+        capacity = measuredAh > 0 ? ((measuredAh / parsedCapacity) * 100).toFixed(1) : '0';
     } else if (result == "0003") {
         eventName = "Battery Deployed"
     } else {
