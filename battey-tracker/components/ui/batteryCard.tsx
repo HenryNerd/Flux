@@ -94,8 +94,25 @@ export default function BatteryCard({ battery }: { battery: string }) {
     const handleClick = (batteryId: string) => {
         router.push(`/battery/${batteryId}`)
     }
-    
 
+    const deploy = async () => {
+        try {
+            const response = await fetch(`/api/battery/${battery}`, {
+                method: 'POST',
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert("Battery checked in successfully!");
+            } else {
+                alert("Failed to check in: " + result.error);
+            }
+        } catch (error) {
+            console.error("Error checking in:", error);
+            alert("Failed to check in battery");
+        }
+    };
+    
     return (
         <div>
             <Card className="m-3">
@@ -142,7 +159,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
                             </form>
                         </SheetContent>
                     </Sheet>
-                    <Button className='ml-2' disabled>Deploy</Button>
+                    <Button onClick={deploy} className='ml-2' disabled>Deploy</Button>
                 </CardFooter>
             </Card>
         </div>

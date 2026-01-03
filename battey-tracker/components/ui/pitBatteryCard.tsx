@@ -40,9 +40,33 @@ export default function BatteryCard({ id }: { id: string }) {
             })
     }, [id])
 
+    const deploy = async () => {
+        try {
+            const response = await fetch(`/api/battery/0001-${id}`, {
+                method: 'POST',
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert("Battery checked out successfully!");
+            } else {
+                alert("Failed to check out: " + result.error);
+            }
+        } catch (error) {
+            console.error("Error checking out:", error);
+            alert("Failed to check out battery");
+        }
+    };
+
     if (loading) return (
         <Card className="w-60 h-[80px] bg-gray-300 flex items-center justify-center">
             <Skeleton className="h-[20px] w-[150px] rounded-full" />
+        </Card>
+    )
+
+    if (!id) return (
+        <Card className="w-60 h-[80px] bg-gray-400 flex items-center justify-center">
+            <h1 className="text-lg text-white">Empty</h1>
         </Card>
     )
 
@@ -57,11 +81,10 @@ export default function BatteryCard({ id }: { id: string }) {
                 <Card className="m-2 mt-10">
                     <div className="gap-1">
                         <CardTitle className="text-2xl ml-4 mb-2">{data?.friendlyName}</CardTitle>
-                        <CardDescription className="ml-4 text-sm">{data.season} | {data.batteryID}</CardDescription>
+                        <CardDescription className="ml-4 text-sm">{data?.season} | {data?.batteryID}</CardDescription>
                     </div>
                 </Card>
-                <Button className="bg-slate-200 text-color-white" variant="outline">Deploy</Button>
-                <Button className="bg-slate-200 text-color-white" variant="outline">Check In</Button>
+                    <Button className="bg-slate-200 m-3" onClick={deploy} variant="outline">Deploy</Button>
             </SheetContent>
         </Sheet>
     )
