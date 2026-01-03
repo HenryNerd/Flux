@@ -99,8 +99,8 @@ export default function Home() {
     <div className="bg-white min-h-screen">
       <Navbar></Navbar>
       <Drawer>
-        <DrawerTrigger>
-          <Button>QR Code Scanner</Button>
+        <DrawerTrigger asChild>
+          <Button className="bg-slate-200 text-color-black ml-4" variant="outline">QR Code Scanner</Button>
         </DrawerTrigger>
         <DrawerContent>
           <DrawerTitle>Qr Code Scaner</DrawerTitle>
@@ -115,7 +115,7 @@ export default function Home() {
       </Drawer>
       <Sheet>
         <SheetTrigger asChild>
-          <Button className="bg-slate-200 mt-4 mb-5 ml-4" variant="outline">New Battery</Button>
+          <Button className="bg-slate-200 mt-4 mb-5 ml-3 mr-3" variant="outline">New Battery</Button>
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>
@@ -142,6 +142,7 @@ export default function Home() {
           </SheetHeader>
         </SheetContent>
       </Sheet>
+      <Button className="bg-slate-200 text-color-black" variant="outline" onClick={() => router.push(`pit`)}>Pit View</Button>
       {
         keys.map((key, index) => (
           <BatteryCard key={index} battery={key} />
