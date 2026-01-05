@@ -38,7 +38,7 @@ export default async function BatteryPage({
                             <p>{batteryData.month} {batteryData.season} | {batteryData.batteryID}</p>
                             <div className="mt-3">
                                 <DichargeTest battery={id}></DichargeTest>
-                                <Button className="ml-2" disabled>Deploy</Button>
+                                <Button className="ml-2">Deploy</Button>
                                 <Button className="ml-2" disabled>Post Match</Button>
                                 <Button className="ml-2" disabled>Charger</Button>
                                 <Dialog>

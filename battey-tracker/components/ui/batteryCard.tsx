@@ -97,19 +97,19 @@ export default function BatteryCard({ battery }: { battery: string }) {
 
     const deploy = async () => {
         try {
-            const response = await fetch(`/api/battery/${battery}`, {
+            const response = await fetch(`/api/deploy/${battery}`, {
                 method: 'POST',
             });
             const result = await response.json();
             
             if (result.success) {
-                alert("Battery checked in successfully!");
+                alert("Battery checked out successfully!");
             } else {
-                alert("Failed to check in: " + result.error);
+                alert("Failed to check out: " + result.error);
             }
         } catch (error) {
-            console.error("Error checking in:", error);
-            alert("Failed to check in battery");
+            console.error("Error checking out:", error);
+            alert("Failed to check out battery");
         }
     };
     
@@ -159,7 +159,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
                             </form>
                         </SheetContent>
                     </Sheet>
-                    <Button onClick={deploy} className='ml-2' disabled>Deploy</Button>
+                    <Button onClick={deploy} className='ml-2'>Deploy</Button>
                 </CardFooter>
             </Card>
         </div>

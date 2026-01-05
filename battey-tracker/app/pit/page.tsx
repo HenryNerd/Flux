@@ -34,15 +34,15 @@ export default function Pit() {
                         <BatteryCard id="00000002"></BatteryCard>
                     </div>
                     <div className="flex gap-4 mb-4">
-                        <BatteryCard id="1234567890"></BatteryCard>
-                        <BatteryCard id=""></BatteryCard>
+                        <BatteryCard id="00000003"></BatteryCard>
+                        <BatteryCard id="00000004"></BatteryCard>
                     </div>
                     <div className="flex gap-4 mb-4">
-                        <BatteryCard id=""></BatteryCard>
-                        <BatteryCard id=""></BatteryCard>
+                        <BatteryCard id="00000005"></BatteryCard>
+                        <BatteryCard id="00000006"></BatteryCard>
                     </div>
                     <div className="flex gap-4 mb-4">
-                        <BatteryCard id=""></BatteryCard>
+                        <BatteryCard id="00000007"></BatteryCard>
                         <BatteryCard id=""></BatteryCard>
                     </div>
                 </Card>

@@ -42,7 +42,7 @@ export default function BatteryCard({ id }: { id: string }) {
 
     const deploy = async () => {
         try {
-            const response = await fetch(`/api/battery/0001-${id}`, {
+            const response = await fetch(`/api/deploy/0001-${id}`, {
                 method: 'POST',
             });
             const result = await response.json();
