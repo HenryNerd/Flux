@@ -22,7 +22,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "./button"
 
-export default function BatteryCard({ id }: { id: string }) {
+export default function BatteryCard({ id, slot }: { id: string; slot: string }) {
     const [data, setData] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
@@ -76,6 +76,7 @@ export default function BatteryCard({ id }: { id: string }) {
                 <Card className="w-60 h-[80px] bg-green-300 flex items-center justify-center">
                     <h1 className="text-lg">{data?.friendlyName || id}</h1>
                 </Card>
+                <h1>{slot}</h1>
             </SheetTrigger>
             <SheetContent>
                 <Card className="m-2 mt-10">

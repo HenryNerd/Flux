@@ -23,6 +23,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from 'next/navigation'
 import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface BatteryData {
     season: string
@@ -87,10 +89,21 @@ export default function BatteryCard({ battery }: { battery: string }) {
             })
     }, [battery])
 
-    if (loading) return <div>Loading...</div>
+    if (loading) return <div>
+        <Card className="m-3">
+                <CardHeader>
+                    <CardTitle className="text-red-300 font-bold text-2xl">
+                    <Skeleton className="h-24 w-128 rounded-full" />
+                    </CardTitle>
+                    <CardDescription className="text-gray-500">
+                    <Skeleton className="h-24 w-128 rounded-full" />
+                    </CardDescription>
+                </CardHeader>
+            </Card>
+    </div>
     if (!data) return <div>No data</div>
 
-    
+
     const handleClick = (batteryId: string) => {
         router.push(`/battery/${batteryId}`)
     }
@@ -101,18 +114,18 @@ export default function BatteryCard({ battery }: { battery: string }) {
                 method: 'POST',
             });
             const result = await response.json();
-            
+
             if (result.success) {
-                alert("Battery checked out successfully!");
+                toast.success(`${data.friendlyName} has been checked out`)
             } else {
-                alert("Failed to check out: " + result.error);
+                toast.error(`Could not check out ${data.friendlyName}`)
             }
         } catch (error) {
             console.error("Error checking out:", error);
-            alert("Failed to check out battery");
+            toast.error(`Could not check out ${data.friendlyName}`)
         }
     };
-    
+
     return (
         <div>
             <Card className="m-3">
