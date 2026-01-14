@@ -27,7 +27,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { Spinner } from "@/components/ui/spinner"
 
 export default function Home() {
   const router = useRouter();
@@ -49,9 +48,7 @@ export default function Home() {
       })
   }, [])
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen">
-    <Spinner />
-  </div>
+  if (loading) return <div>Loading...</div>
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

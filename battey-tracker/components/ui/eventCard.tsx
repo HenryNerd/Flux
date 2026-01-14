@@ -18,14 +18,16 @@ export default async function EventCard({ id, realCapacity }: { id: string, real
     console.log("EventCard data:", eventData);
     
     if (result == "0001") {
-        eventName = "Battery Created"
+        eventName = "Created"
     } else if (result == "0002") {
         eventName = "Discharge Test"
         const measuredAh = parseFloat(eventData.mesuredAh || '0');
         capacity = measuredAh > 0 ? ((measuredAh / parsedCapacity) * 100).toFixed(1) : '0';
     } else if (result == "0003") {
-        eventName = "Battery Deployed"
-    } else {
+        eventName = "Deployed"
+    } else if (result == "0004") {
+        eventName = "Checked In"
+    }else {
         eventName = "Unregistered Event"
     }
     
@@ -52,6 +54,9 @@ export default async function EventCard({ id, realCapacity }: { id: string, real
                                 </div>
                             </div>
                         </Card>
+                    )}
+                    {result == "0004" && (
+                        <div>Slot - {eventData?.slot}</div>
                     )}
                 </CardHeader>
             </Card>

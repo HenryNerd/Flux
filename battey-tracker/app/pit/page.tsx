@@ -15,17 +15,22 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
+    SelectLabel,
 } from "@/components/ui/select"
 import {
     ToggleGroup,
     ToggleGroupItem,
-  } from "@/components/ui/toggle-group"
+} from "@/components/ui/toggle-group"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { SelectGroup } from "@radix-ui/react-select"
+import { toast } from "sonner"
 
 export default function Pit() {
     const [keys, setKeys] = useState([])
     const [loading, setLoading] = useState(true)
+    const [selectedBattery, setSelectedBattery] = useState('')
+    const [selectedSlot, setSelectedSlot] = useState('')
 
     useEffect(() => {
         fetch('/api/getBattries')
@@ -37,6 +42,31 @@ export default function Pit() {
             })
     }, [])
 
+    const buttonClick = async () => {
+        if (!selectedBattery || !selectedSlot) {
+            toast.warning("Please select both a battery and a charger slot");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/checkin/${selectedSlot}/${selectedBattery}`, {
+                method: 'POST',
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                toast.success("Event has been created")
+                setSelectedBattery('');
+                setSelectedSlot('');
+            } else {
+                toast.error("Failed to check in: " + result.error);
+            }
+        } catch (error) {
+            console.error("Error checking in:", error); 
+            toast.error("Failed to check in battery");
+        }
+    }
+
     return (
         <div>
             <Navbar></Navbar>
@@ -46,19 +76,19 @@ export default function Pit() {
                     <div className="flex flex-col items-center justify-center gap-4">
                         <div className="flex gap-4">
                             <BatteryCard slot="01" id="00000001"></BatteryCard>
-                            <BatteryCard slot="02" id="00000002"></BatteryCard>
+                            <BatteryCard slot="02" id=""></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="03" id="00000003"></BatteryCard>
-                            <BatteryCard slot="04" id="00000004"></BatteryCard>
+                            <BatteryCard slot="03" id="00000002"></BatteryCard>
+                            <BatteryCard slot="04" id="00000003"></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="05" id="00000005"></BatteryCard>
-                            <BatteryCard slot="06" id="00000006"></BatteryCard>
+                            <BatteryCard slot="05" id="00000004"></BatteryCard>
+                            <BatteryCard slot="06" id="00000005"></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="07" id="00000007"></BatteryCard>
-                            <BatteryCard slot="08" id=""></BatteryCard>
+                            <BatteryCard slot="07" id="00000006"></BatteryCard>
+                            <BatteryCard slot="08" id="00000007"></BatteryCard>
                         </div>
                     </div>
                 </Card>
@@ -72,34 +102,52 @@ export default function Pit() {
                         }
                     </div>
                 </Card>
-                <Card className="h-[350px] w-1/4 m-4">
-                    <CardTitle className="text-lg">Battery Check Out</CardTitle>
-                    <Select>
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Theme" />
-                        </SelectTrigger>
-                        <SelectContent>
-                        {
-                            keys.map((key, index) => (
-                                <SelectItem value="{key}">{key}</SelectItem>
-                            ))
-                        }
-                        </SelectContent>
-                    </Select>
-                    <Label htmlFor="slotSelector">Charger Slot:</Label>
-                    <ToggleGroup id="slotSelector" type="single" variant="outline">
-                        <ToggleGroupItem value="1">1</ToggleGroupItem>
-                        <ToggleGroupItem value="2">2</ToggleGroupItem>
-                        <ToggleGroupItem value="3">3</ToggleGroupItem>
-                        <ToggleGroupItem value="4">4</ToggleGroupItem>
-                        <ToggleGroupItem value="5">5</ToggleGroupItem>
-                        <ToggleGroupItem value="6">6</ToggleGroupItem>
-                        <ToggleGroupItem value="7">7</ToggleGroupItem>
-                        <ToggleGroupItem value="8">8</ToggleGroupItem>
-                    </ToggleGroup>
-                    <Button className="bg-yellow-300 ml-2 mr-2 hover:bg-yellow-400" variant="outline">Check In</Button>
+                <Card className="h-min w-1/4 m-4">
+                    <CardTitle className="text-lg ml-3 mt-3">Battery Check In</CardTitle>
+                    <div className="ml-3 mr-3 mb-3">
+                        <Label className="mb-1">Battery:</Label>
+                        <Select value={selectedBattery} onValueChange={setSelectedBattery}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Battery" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Batteries</SelectLabel>
+                                    {
+                                        keys.map((key) => (
+                                            <SelectItem key={key} value={key}>{key}</SelectItem>
+                                        ))
+                                    }
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                        <Label className="mt-4 mb-1" htmlFor="slotSelector">Charger Slot:</Label>
+                        <ToggleGroup
+                            id="slotSelector"
+                            type="single"
+                            variant="outline"
+                            value={selectedSlot}
+                            onValueChange={setSelectedSlot}
+                        >
+                            <ToggleGroupItem value="01">1</ToggleGroupItem>
+                            <ToggleGroupItem value="02">2</ToggleGroupItem>
+                            <ToggleGroupItem value="03">3</ToggleGroupItem>
+                            <ToggleGroupItem value="04">4</ToggleGroupItem>
+                            <ToggleGroupItem value="05">5</ToggleGroupItem>
+                            <ToggleGroupItem value="06">6</ToggleGroupItem>
+                            <ToggleGroupItem value="07">7</ToggleGroupItem>
+                            <ToggleGroupItem value="08">8</ToggleGroupItem>
+                        </ToggleGroup>
+                        <Button
+                            className="bg-yellow-300 mt-4 w-full hover:bg-yellow-400"
+                            variant="outline"
+                            onClick={buttonClick}
+                        >
+                            Check In
+                        </Button>
+                    </div>
                 </Card>
             </div>
-        </div >
+        </div>
     )
 }
