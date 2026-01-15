@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 import { NextResponse } from "next/server";
 
-export async function GET(
+export async function POST(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
