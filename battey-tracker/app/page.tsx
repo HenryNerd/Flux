@@ -33,7 +33,7 @@ import {
   DialogDescription,
   DialogClose,
   DialogTitle,
-  DialogTrigger,
+  DialogHeader
 } from "@/components/ui/dialog"
 
 export default function Home() {
@@ -111,13 +111,26 @@ export default function Home() {
   return (
     <div className="bg-white min-h-screen">
       <Navbar></Navbar>
-      {isPreview && 
-      <Dialog>
-        <DialogTitle>Development Build</DialogTitle>
-        <DialogDescription>This site contains features that are in beta and have not been tested or verifed. Some features may be broken or just do nothing. If you want a reliable experince please proced to the normal site with the button bellow.</DialogDescription>
-        <DialogClose>Continue to Beta Site</DialogClose>
-        <Button onClick={normalSite}>Go to Normal Site</Button>
-        </Dialog>}
+      {isPreview && (
+        <Dialog defaultOpen={true}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Development Build</DialogTitle>
+              <DialogDescription>
+                This site contains features that are in beta and have not been tested or verified.
+                Some features may be broken. If you want a reliable experience, please proceed
+                to the normal site.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 mt-4">
+              <Button onClick={normalSite}>Go to Normal Site</Button>
+              <DialogClose asChild>
+                <Button variant="ghost">Continue to Beta Site</Button>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
       <Drawer>
         <DrawerTrigger asChild>
           <Button className="bg-slate-200 text-color-black ml-4" variant="outline">QR Code Scanner</Button>
