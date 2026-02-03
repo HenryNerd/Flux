@@ -27,6 +27,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogClose,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 export default function Home() {
   const router = useRouter();
@@ -37,6 +45,7 @@ export default function Home() {
   const [name, setname] = useState('');
   const [nfc, setnfc] = useState('');
   const [capacity, setcapacity] = useState('');
+  const isPreview = process.env.VERCEL_ENV === "preview";
 
   useEffect(() => {
     fetch('/api/getBattries')
@@ -95,9 +104,20 @@ export default function Home() {
     router.push(`/battery/${batteryId}`)
   }
 
+  const normalSite = () => {
+    window.location.href = "https://flux.echo-labs.xyz/";
+  };
+
   return (
     <div className="bg-white min-h-screen">
       <Navbar></Navbar>
+      {isPreview && 
+      <Dialog>
+        <DialogTitle>Development Build</DialogTitle>
+        <DialogDescription>This site contains features that are in beta and have not been tested or verifed. Some features may be broken or just do nothing. If you want a reliable experince please proced to the normal site with the button bellow.</DialogDescription>
+        <DialogClose>Continue to Beta Site</DialogClose>
+        <Button onClick={normalSite}>Go to Normal Site</Button>
+        </Dialog>}
       <Drawer>
         <DrawerTrigger asChild>
           <Button className="bg-slate-200 text-color-black ml-4" variant="outline">QR Code Scanner</Button>
