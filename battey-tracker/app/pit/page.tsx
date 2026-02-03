@@ -75,20 +75,20 @@ export default function Pit() {
                     <CardTitle className="text-lg mb-4">Pit Charging Station</CardTitle>
                     <div className="flex flex-col items-center justify-center gap-4">
                         <div className="flex gap-4">
-                            <BatteryCard slot="01" id="00000001"></BatteryCard>
-                            <BatteryCard slot="02" id=""></BatteryCard>
+                            <BatteryCard slot="01"></BatteryCard>
+                            <BatteryCard slot="02"></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="03" id="00000002"></BatteryCard>
-                            <BatteryCard slot="04" id="00000003"></BatteryCard>
+                            <BatteryCard slot="03"></BatteryCard>
+                            <BatteryCard slot="04"></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="05" id="00000004"></BatteryCard>
-                            <BatteryCard slot="06" id="00000005"></BatteryCard>
+                            <BatteryCard slot="05"></BatteryCard>
+                            <BatteryCard slot="06"></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="07" id="00000006"></BatteryCard>
-                            <BatteryCard slot="08" id="00000007"></BatteryCard>
+                            <BatteryCard slot="07"></BatteryCard>
+                            <BatteryCard slot="08"></BatteryCard>
                         </div>
                     </div>
                 </Card>

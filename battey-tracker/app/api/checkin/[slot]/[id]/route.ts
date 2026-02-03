@@ -3,12 +3,14 @@ import { NextResponse } from "next/server";
 
 export async function POST(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ slot: string; id: string }> }
 ) {
     let client;
     
     try {
-        const { id } = await params;
+        const { slot, id } = await params;
+
+        const batteryID = id.includes('-') ? id.split('-')[1] : id;
 
         client = createClient({
             username: 'default',
@@ -21,42 +23,41 @@ export async function POST(
 
         await client.connect();
         
-        const data = await client.hGetAll(`0004-S${id}`);
+        const timestamp = new Date().toISOString();
+        const eventKey = `${Date.now()}-${batteryID}`;
         
-        const entries = Object.entries(data).map(([key, value]) => {
-            const parsedValue = JSON.parse(value);
-            
-            const timestamp = parsedValue.timestamp;
-            
-            return {
-                key,
-                value: parsedValue,
-                timestamp,
-                date: timestamp ? new Date(timestamp) : null
-            };
-        });
+        const checkInEvent = {
+            eventType: 'Battery Check In',
+            slot: slot,
+            batteryID: batteryID,
+            timestamp: timestamp,
+            season: '2026',
+            month: new Date().toLocaleString('en-US', { month: 'long' })
+        };
         
-        const sortedEntries = entries.sort((a, b) => {
-            if (!a.date || !b.date) return 0;
-            return b.date.getTime() - a.date.getTime();
-        });
+        await client.hSet(
+            `0004-S${slot}`,
+            eventKey,
+            JSON.stringify(checkInEvent)
+        );
         
         return NextResponse.json({ 
             success: true, 
-            data: sortedEntries,
+            message: 'Battery checked in successfully',
+            data: checkInEvent
         });
         
     } catch (error) {
         console.error("Redis error:", error);
         
         return NextResponse.json(
-            { success: false, error: "Failed to fetch data" },
+            { success: false, error: "Failed to check in battery" },
             { status: 500 }
         );
     } finally {
         if (client) {
             try {
-                await client.disconnect();
+                await client.close();
             } catch (disconnectError) {
                 console.error("Error disconnecting:", disconnectError);
             }
