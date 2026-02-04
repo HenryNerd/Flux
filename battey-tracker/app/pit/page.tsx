@@ -99,6 +99,37 @@ export default function Pit() {
         }
     }
 
+    const skipBattery = async () => {
+        if (keys.length === 0) {
+            toast.warning("No batteries in rotation");
+            return;
+        }
+
+        const topBattery = keys[0];
+
+        try {
+            const response = await fetch('/api/updateRotation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ batteryID: topBattery })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                toast.success("Battery Skipped");
+                fetchBatteries();
+            } else {
+                toast.error("Failed to skip battery");
+            }
+        } catch (error) {
+            console.error("Error skipping battery:", error);
+            toast.error("Failed to skip battery");
+        }
+    }
+
     return (
         <div>
             <Navbar></Navbar>
@@ -125,7 +156,17 @@ export default function Pit() {
                     </div>
                 </Card>
                 <Card className="m-4 w-1/4 p-0">
-                    <CardTitle className="mt-3 ml-3 text-lg">Battery Rotation</CardTitle>
+                    <div className="flex justify-between items-center">
+                        <CardTitle className="mt-3 ml-3 text-lg">Battery Rotation</CardTitle>
+                        <Button 
+                            variant="outline" 
+                            className="mt-2 mr-3" 
+                            onClick={skipBattery}
+                            disabled={keys.length === 0}
+                        >
+                            Skip
+                        </Button>
+                    </div>
                     <div className="gap-0">
                         {
                             keys.map((key, index) => (

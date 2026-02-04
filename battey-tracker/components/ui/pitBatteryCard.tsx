@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "./button"
+import { toast } from "sonner"
 
 interface LatestCheckIn {
     key: string
@@ -112,7 +113,7 @@ export default function BatteryCard({ slot, onRotationUpdate }: { slot: string; 
 
     const deploy = async () => {
         if (!slotData?.latestCheckIn?.batteryID) {
-            alert("No battery in this slot");
+            toast.error("No battery in this slot");
             return;
         }
 
@@ -133,7 +134,8 @@ export default function BatteryCard({ slot, onRotationUpdate }: { slot: string; 
                     body: JSON.stringify({ batteryID: batteryKey })
                 });
                 
-                alert("Battery checked out successfully!");
+                toast.success("Battery Checked Out");
+                
                 setLoading(true)
                 const slotResponse = await fetch(`/api/getSlot/${slot}`)
                 const slotResult = await slotResponse.json()
@@ -145,11 +147,11 @@ export default function BatteryCard({ slot, onRotationUpdate }: { slot: string; 
                     onRotationUpdate();
                 }
             } else {
-                alert("Failed to check out: " + result.error);
+                toast.error("Failed to check out: " + result.error);
             }
         } catch (error) {
             console.error("Error checking out:", error);
-            alert("Failed to check out battery");
+            toast.error("Failed to check out battery");
         }
     };
 
