@@ -13,12 +13,13 @@ import { Label } from "@radix-ui/react-label"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/ui/navbar"
 import { useState } from "react"
+import Image from "next/image"
 
 export default function Login() {
-      const [username, setusername] = useState('');
-      const handleSubmit = async (e: React.FormEvent) => {
+    const [username, setusername] = useState('');
+    const handleSubmit = async (e: React.FormEvent) => {
         alert(username)
-      }
+    }
 
     return (
         <div>
@@ -26,14 +27,20 @@ export default function Login() {
             <div className="flex justify-center mt-5">
                 <Card className="w-lg">
                     <CardHeader className="mb-4">
-                        <CardTitle>Sign In</CardTitle>
-                        <CardDescription>To get an acount please get a team member with acess to register you.</CardDescription>
+                        <Image
+                            src="/favicon.ico"
+                            alt="Battery image"
+                            width={150}
+                            height={150}
+                            className="mx-auto"
+                        />
+                        <CardTitle className="text-3xl text-center">Sign In</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit}>
                             <Label htmlFor="username">Username: </Label>
                             <Input value={username} onChange={(e) => setusername(e.target.value)} type="text" id="username"></Input>
-                            <Button className="mt-5 w-full bg-red-300 hover:bg-red-400" type="submit">Sign In</Button>
+                            <Button className="mt-5 w-full bg-gradient-to-r from-red-300 via-pink-600 to-purple-300 bg-[length:200%_100%] animate-pulse" type="submit">Sign In</Button>
                         </form>
                     </CardContent>
                 </Card>
