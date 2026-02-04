@@ -7,7 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import RotationBatteryCard from "@/components/ui/rotation"
 import {
     Select,
@@ -38,39 +38,51 @@ export default function Pit() {
     const [loading, setLoading] = useState(true)
     const [selectedBattery, setSelectedBattery] = useState('')
     const [selectedSlot, setSelectedSlot] = useState('')
+    const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     const fetchBatteries = async () => {
-        try {
-            const response = await fetch('/api/getBattries')
-            const data = await response.json()
-            const flatKeys = data.keys.flat()
-            setKeys(flatKeys)
-            
-            const batteryDetails = await Promise.all(
-                flatKeys.map(async (key: string) => {
-                    const batteryResponse = await fetch(`/api/battery/${key}`)
-                    const batteryData = await batteryResponse.json()
-                    return {
-                        key: key,
-                        friendlyName: batteryData.friendlyName || key,
-                        batteryID: batteryData.batteryID
-                    }
-                })
-            )
-            
-            setBatteries(batteryDetails)
-            setLoading(false)
-        } catch (error) {
-            console.error('Error fetching batteries:', error)
-            setLoading(false)
+        if (fetchTimeoutRef.current) {
+            clearTimeout(fetchTimeoutRef.current)
         }
+        
+        fetchTimeoutRef.current = setTimeout(async () => {
+            try {
+                const response = await fetch('/api/getBattries')
+                const data = await response.json()
+                const flatKeys = data.keys.flat()
+                setKeys(flatKeys)
+                
+                const batteryDetails = await Promise.all(
+                    flatKeys.map(async (key: string) => {
+                        const batteryResponse = await fetch(`/api/battery/${key}`)
+                        const batteryData = await batteryResponse.json()
+                        return {
+                            key: key,
+                            friendlyName: batteryData.friendlyName || key,
+                            batteryID: batteryData.batteryID
+                        }
+                    })
+                )
+                
+                setBatteries(batteryDetails)
+                setLoading(false)
+            } catch (error) {
+                console.error('Error fetching batteries:', error)
+                setLoading(false)
+            }
+        }, 300)
     }
 
     useEffect(() => {
         fetchBatteries()
         
         const interval = setInterval(fetchBatteries, 5000)
-        return () => clearInterval(interval)
+        return () => {
+            clearInterval(interval)
+            if (fetchTimeoutRef.current) {
+                clearTimeout(fetchTimeoutRef.current)
+            }
+        }
     }, [])
 
     const buttonClick = async () => {
@@ -119,7 +131,7 @@ export default function Pit() {
             const result = await response.json();
 
             if (result.success) {
-                toast.success("Battery Skipped");
+                toast.success("Battery moved to end of rotation");
                 fetchBatteries();
             } else {
                 toast.error("Failed to skip battery");

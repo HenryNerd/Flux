@@ -37,9 +37,13 @@ export async function POST(
             timestamp: timestamp,
         });
 
+        const rotationKey = '0005-ROTATION-ORDER';
+        await client.lRem(rotationKey, 0, id);
+        await client.rPush(rotationKey, id);
+
         return NextResponse.json({
             success: true,
-            message: "Test data saved",
+            message: "Battery deployed and rotation updated",
             id,
         });
     } catch (error) {

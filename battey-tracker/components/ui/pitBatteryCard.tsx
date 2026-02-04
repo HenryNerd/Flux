@@ -106,43 +106,34 @@ export default function BatteryCard({ slot, onRotationUpdate }: { slot: string; 
         }
 
         fetchSlotData()
-        
+
         const interval = setInterval(fetchSlotData, 5000)
         return () => clearInterval(interval)
     }, [slot])
 
     const deploy = async () => {
         if (!slotData?.latestCheckIn?.batteryID) {
-            toast.error("No battery in this slot");
+            toast.warning("No battery in this slot");
             return;
         }
 
         try {
             const batteryKey = `0001-${slotData.latestCheckIn.batteryID}`;
-            
+
             const response = await fetch(`/api/deploy/${batteryKey}`, {
                 method: 'POST',
             });
             const result = await response.json();
-            
+
             if (result.success) {
-                await fetch('/api/updateRotation', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ batteryID: batteryKey })
-                });
-                
                 toast.success("Battery Checked Out");
-                
                 setLoading(true)
                 const slotResponse = await fetch(`/api/getSlot/${slot}`)
                 const slotResult = await slotResponse.json()
                 setSlotData(slotResult)
                 setBatteryData(null)
                 setLoading(false)
-                
+
                 if (onRotationUpdate) {
                     onRotationUpdate();
                 }
