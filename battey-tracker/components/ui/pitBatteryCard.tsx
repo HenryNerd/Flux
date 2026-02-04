@@ -78,7 +78,7 @@ function TimeElapsed({ timestamp }: { timestamp: string }) {
     return <span className="text-xs text-gray-600">{elapsed}</span>
 }
 
-export default function BatteryCard({ slot }: { slot: string }) {
+export default function BatteryCard({ slot, onRotationUpdate }: { slot: string; onRotationUpdate?: () => void }) {
     const [slotData, setSlotData] = useState<SlotData | null>(null)
     const [batteryData, setBatteryData] = useState<BatteryData | null>(null)
     const [loading, setLoading] = useState(true)
@@ -117,12 +117,22 @@ export default function BatteryCard({ slot }: { slot: string }) {
         }
 
         try {
-            const response = await fetch(`/api/deploy/0001-${slotData.latestCheckIn.batteryID}`, {
+            const batteryKey = `0001-${slotData.latestCheckIn.batteryID}`;
+            
+            const response = await fetch(`/api/deploy/${batteryKey}`, {
                 method: 'POST',
             });
             const result = await response.json();
             
             if (result.success) {
+                await fetch('/api/updateRotation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ batteryID: batteryKey })
+                });
+                
                 alert("Battery checked out successfully!");
                 setLoading(true)
                 const slotResponse = await fetch(`/api/getSlot/${slot}`)
@@ -130,6 +140,10 @@ export default function BatteryCard({ slot }: { slot: string }) {
                 setSlotData(slotResult)
                 setBatteryData(null)
                 setLoading(false)
+                
+                if (onRotationUpdate) {
+                    onRotationUpdate();
+                }
             } else {
                 alert("Failed to check out: " + result.error);
             }

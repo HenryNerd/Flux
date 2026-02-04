@@ -26,20 +26,51 @@ import { Label } from "@/components/ui/label"
 import { SelectGroup } from "@radix-ui/react-select"
 import { toast } from "sonner"
 
+interface BatteryInfo {
+    key: string
+    friendlyName: string
+    batteryID: string
+}
+
 export default function Pit() {
     const [keys, setKeys] = useState([])
+    const [batteries, setBatteries] = useState<BatteryInfo[]>([])
     const [loading, setLoading] = useState(true)
     const [selectedBattery, setSelectedBattery] = useState('')
     const [selectedSlot, setSelectedSlot] = useState('')
 
+    const fetchBatteries = async () => {
+        try {
+            const response = await fetch('/api/getBattries')
+            const data = await response.json()
+            const flatKeys = data.keys.flat()
+            setKeys(flatKeys)
+            
+            const batteryDetails = await Promise.all(
+                flatKeys.map(async (key: string) => {
+                    const batteryResponse = await fetch(`/api/battery/${key}`)
+                    const batteryData = await batteryResponse.json()
+                    return {
+                        key: key,
+                        friendlyName: batteryData.friendlyName || key,
+                        batteryID: batteryData.batteryID
+                    }
+                })
+            )
+            
+            setBatteries(batteryDetails)
+            setLoading(false)
+        } catch (error) {
+            console.error('Error fetching batteries:', error)
+            setLoading(false)
+        }
+    }
+
     useEffect(() => {
-        fetch('/api/getBattries')
-            .then(res => res.json())
-            .then(data => {
-                const flatKeys = data.keys.flat()
-                setKeys(flatKeys)
-                setLoading(false)
-            })
+        fetchBatteries()
+        
+        const interval = setInterval(fetchBatteries, 5000)
+        return () => clearInterval(interval)
     }, [])
 
     const buttonClick = async () => {
@@ -58,6 +89,7 @@ export default function Pit() {
                 toast.success("Event has been created")
                 setSelectedBattery('');
                 setSelectedSlot('');
+                fetchBatteries();
             } else {
                 toast.error("Failed to check in: " + result.error);
             }
@@ -75,20 +107,20 @@ export default function Pit() {
                     <CardTitle className="text-lg mb-4">Pit Charging Station</CardTitle>
                     <div className="flex flex-col items-center justify-center gap-4">
                         <div className="flex gap-4">
-                            <BatteryCard slot="01"></BatteryCard>
-                            <BatteryCard slot="02"></BatteryCard>
+                            <BatteryCard slot="01" onRotationUpdate={fetchBatteries}></BatteryCard>
+                            <BatteryCard slot="02" onRotationUpdate={fetchBatteries}></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="03"></BatteryCard>
-                            <BatteryCard slot="04"></BatteryCard>
+                            <BatteryCard slot="03" onRotationUpdate={fetchBatteries}></BatteryCard>
+                            <BatteryCard slot="04" onRotationUpdate={fetchBatteries}></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="05"></BatteryCard>
-                            <BatteryCard slot="06"></BatteryCard>
+                            <BatteryCard slot="05" onRotationUpdate={fetchBatteries}></BatteryCard>
+                            <BatteryCard slot="06" onRotationUpdate={fetchBatteries}></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="07"></BatteryCard>
-                            <BatteryCard slot="08"></BatteryCard>
+                            <BatteryCard slot="07" onRotationUpdate={fetchBatteries}></BatteryCard>
+                            <BatteryCard slot="08" onRotationUpdate={fetchBatteries}></BatteryCard>
                         </div>
                     </div>
                 </Card>
@@ -114,8 +146,10 @@ export default function Pit() {
                                 <SelectGroup>
                                     <SelectLabel>Batteries</SelectLabel>
                                     {
-                                        keys.map((key) => (
-                                            <SelectItem key={key} value={key}>{key}</SelectItem>
+                                        batteries.map((battery) => (
+                                            <SelectItem key={battery.key} value={battery.key}>
+                                                {battery.friendlyName}
+                                            </SelectItem>
                                         ))
                                     }
                                 </SelectGroup>

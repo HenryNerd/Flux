@@ -29,23 +29,23 @@ export default async function BatteryPage({
         <div>
             <Navbar />
             <div className="mx-3 mt-4">
-                <Card className="">
+                <Card>
                     <CardContent>
-                        <h1 className="text-red-300 text-3xl font-bold mb-2">
+                        <h1 className="text-red-300 text-3xl font-bold mb-2 break-words">
                             {batteryData.friendlyName || id}
                         </h1>
                         <div>
-                            <p>{batteryData.month} {batteryData.season} | {batteryData.batteryID}</p>
-                            <div className="mt-3">
+                            <p className="text-sm sm:text-base">{batteryData.month} {batteryData.season} | {batteryData.batteryID}</p>
+                            <div className="mt-3 flex flex-wrap gap-2">
                                 <DichargeTest battery={id}></DichargeTest>
-                                <Button className="ml-2">Deploy</Button>
-                                <Button className="ml-2" disabled>Post Match</Button>
-                                <Button className="ml-2" disabled>Charger</Button>
+                                <Button className="flex-shrink-0">Deploy</Button>
+                                <Button className="flex-shrink-0">Check In</Button>
+                                <Button className="flex-shrink-0" disabled>Post Match</Button>
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <Button variant="destructive" className="ml-2 bg-red-500" disabled>Deprecate</Button>
+                                        <Button variant="destructive" className="bg-red-500 flex-shrink-0" disabled>Deprecate</Button>
                                     </DialogTrigger>
-                                    <DialogContent>
+                                    <DialogContent className="w-[90vw] max-w-md">
                                         <DialogHeader>
                                             <DialogTitle>Are you absolutely sure?</DialogTitle>
                                             <DialogDescription>
