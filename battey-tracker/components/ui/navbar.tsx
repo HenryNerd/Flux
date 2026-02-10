@@ -16,11 +16,25 @@ export default function Navbar() {
         router.push('/')
     }
 
-    useEffect(() => {
-        setAuthFirstName(localStorage.getItem("auth_firstName"));
-        setAuthLastName(localStorage.getItem("auth_lastName"));
-        setAuthUserRole(localStorage.getItem("auth_userRole"));
-    }, []);
+    const logout = () => {
+        localStorage.clear();
+        router.replace("/login");
+      };
+
+      useEffect(() => {
+        const first = localStorage.getItem("auth_firstName");
+        const last = localStorage.getItem("auth_lastName");
+        const role = localStorage.getItem("auth_userRole");
+      
+        if (!first || !last || !role) {
+            router.replace("/login");
+            return;
+        }
+      
+        setAuthFirstName(first);
+        setAuthLastName(last);
+        setAuthUserRole(role);
+      }, [router]);
 
     if (pathname === '/login') {
         return (
@@ -55,7 +69,7 @@ export default function Navbar() {
             <div className="ml-auto hidden md:block">
                 <div className="flex">
                     <h2 className="font-medium mr-3 mt-1.5 ">{authFirstName} {authLastName}</h2>
-                    <Button variant="outline" >Log Out</Button>
+                    <Button onClick={logout} variant="outline" >Log Out</Button>
                 </div>
             </div>
         </div>

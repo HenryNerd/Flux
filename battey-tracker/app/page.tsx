@@ -68,9 +68,14 @@ export default function Home() {
 
 
   useEffect(() => {
-    setAuthFirstName(localStorage.getItem("auth_firstName"));
-    setAuthLastName(localStorage.getItem("auth_lastName"));
-    setAuthUserRole(localStorage.getItem("auth_userRole"));
+    const first = localStorage.getItem("auth_firstName");
+    const last = localStorage.getItem("auth_lastName");
+    const role = localStorage.getItem("auth_userRole");
+    
+    setAuthFirstName(first);
+    setAuthLastName(last);
+    setAuthUserRole(role);
+  
     fetch('/api/getBattries')
       .then(res => res.json())
       .then(data => {
@@ -78,7 +83,7 @@ export default function Home() {
         setKeys(flatKeys)
         setLoading(false)
       })
-  }, [])
+  }, [router]);
 
   if (loading) return <div>Loading...</div>
 
@@ -193,8 +198,12 @@ export default function Home() {
       <Card className="m-4 p-4 bg-red-300">
         <div className="flex gap-2">
           <h1 className="text-4xl font-medium font-sans text-slate-100">Hey, {authFirstName}</h1>
+          {authUserRole === "member" &&(
           <Badge className="m-2 bg-red-150 border-3 border-slate-100 text-slate-100"><Wrench></Wrench>Pit Member</Badge>
+          )}
+          {authUserRole === "admin" && (
           <Badge className="m-2 bg-red-150 border-3 border-slate-100 text-slate-100"><Crown></Crown>Pit Admin</Badge>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           <Drawer>
@@ -242,6 +251,7 @@ export default function Home() {
             </SheetContent>
           </Sheet>
           <Button className="bg-slate-100 text-color-black hidden md:block" variant="outline" onClick={() => router.push(`pit`)}>Pit View</Button>
+          {authUserRole === "admin" && (
           <Sheet>
             <SheetTrigger asChild>
               <Button className="bg-slate-100 text-color-black" variant="outline">Add User</Button>
@@ -308,6 +318,7 @@ export default function Home() {
               </form>
             </SheetContent>
           </Sheet>
+          )}
         </div>
       </Card>
       {
