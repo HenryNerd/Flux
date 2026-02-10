@@ -3,14 +3,24 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation'
 import { Button } from "./button";
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
     const router = useRouter()
     const pathname = usePathname()
+    const [authFirstName, setAuthFirstName] = useState<string | null>(null);
+    const [authLastName, setAuthLastName] = useState<string | null>(null);
+    const [authUserRole, setAuthUserRole] = useState<string | null>(null);
 
     const goHome = () => {
         router.push('/')
     }
+
+    useEffect(() => {
+        setAuthFirstName(localStorage.getItem("auth_firstName"));
+        setAuthLastName(localStorage.getItem("auth_lastName"));
+        setAuthUserRole(localStorage.getItem("auth_userRole"));
+    }, []);
 
     if (pathname === '/login') {
         return (
@@ -44,7 +54,7 @@ export default function Navbar() {
             </h1>
             <div className="ml-auto hidden md:block">
                 <div className="flex">
-                    <h2 className="font-medium mr-3 mt-1.5 ">Henry Veedahl</h2>
+                    <h2 className="font-medium mr-3 mt-1.5 ">{authFirstName} {authLastName}</h2>
                     <Button variant="outline" >Log Out</Button>
                 </div>
             </div>

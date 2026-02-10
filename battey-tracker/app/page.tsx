@@ -46,6 +46,7 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field"
+import { toast } from "sonner"
 
 export default function Home() {
   const router = useRouter();
@@ -56,9 +57,20 @@ export default function Home() {
   const [name, setname] = useState('');
   const [nfc, setnfc] = useState('');
   const [capacity, setcapacity] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userRole, setUserRole] = useState('member');
   const isPreview = process.env.VERCEL_ENV === "preview";
+  const [authFirstName, setAuthFirstName] = useState<string | null>(null);
+  const [authLastName, setAuthLastName] = useState<string | null>(null);
+  const [authUserRole, setAuthUserRole] = useState<string | null>(null);
+
 
   useEffect(() => {
+    setAuthFirstName(localStorage.getItem("auth_firstName"));
+    setAuthLastName(localStorage.getItem("auth_lastName"));
+    setAuthUserRole(localStorage.getItem("auth_userRole"));
     fetch('/api/getBattries')
       .then(res => res.json())
       .then(data => {
@@ -111,6 +123,42 @@ export default function Home() {
     }
   }
 
+  const handleUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    const userData = {
+      firstName: firstName,
+      lastName: lastName,
+      userName: userName,
+      userRole: userRole
+    }
+
+    try {
+      const response = await fetch('/api/createUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        toast.success(`User ${userName} created successfully`)
+        setFirstName('');
+        setLastName('');
+        setUserName('');
+        setUserRole('member');
+      } else {
+        toast.error('Failed to create user: ' + result.error)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Failed to create user')
+    }
+  }
+
   const handleClick = (batteryId: string) => {
     router.push(`/battery/${batteryId}`)
   }
@@ -144,7 +192,7 @@ export default function Home() {
       )}
       <Card className="m-4 p-4 bg-red-300">
         <div className="flex gap-2">
-          <h1 className="text-4xl font-medium font-sans text-slate-100">Hey, Henry</h1>
+          <h1 className="text-4xl font-medium font-sans text-slate-100">Hey, {authFirstName}</h1>
           <Badge className="m-2 bg-red-150 border-3 border-slate-100 text-slate-100"><Wrench></Wrench>Pit Member</Badge>
           <Badge className="m-2 bg-red-150 border-3 border-slate-100 text-slate-100"><Crown></Crown>Pit Admin</Badge>
         </div>
@@ -200,15 +248,39 @@ export default function Home() {
             </SheetTrigger>
             <SheetContent className="p-3">
               <SheetTitle className="text-center">Add User</SheetTitle>
-              <form>
+              <form onSubmit={handleUserSubmit}>
                 <Label className="mt-3 mb-2" htmlFor="firstName">First Name:</Label>
-                <Input id="firstName" type="text" required></Input>
+                <Input
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
                 <Label className="mt-3 mb-2" htmlFor="lastName">Last Name:</Label>
-                <Input id="lastName" type="text" required></Input>
+                <Input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
                 <Label className="mt-3 mb-2" htmlFor="username">Username:</Label>
-                <Input className="mb-5" id="username" type="text" required></Input>
+                <Input
+                  className="mb-5"
+                  id="username"
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                />
                 <Label className="mt-3 mb-2" htmlFor="userRole">Role:</Label>
-                <RadioGroup defaultValue="member" className="max-w-sm" id="userRole">
+                <RadioGroup
+                  value={userRole}
+                  onValueChange={setUserRole}
+                  className="max-w-sm"
+                  id="userRole"
+                >
                   <FieldLabel htmlFor="admin">
                     <Field orientation="horizontal">
                       <FieldContent>
@@ -230,7 +302,7 @@ export default function Home() {
                     </Field>
                   </FieldLabel>
                 </RadioGroup>
-                <SheetClose>
+                <SheetClose asChild>
                   <Button className="mt-5 bg-red-300 text-slate-100 w-full" variant="outline" type="submit">Add User</Button>
                 </SheetClose>
               </form>
