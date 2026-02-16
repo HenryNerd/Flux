@@ -40,7 +40,6 @@ export default async function BatteryPage({
                                 <DichargeTest battery={id}></DichargeTest>
                                 <Button className="flex-shrink-0">Deploy</Button>
                                 <Button className="flex-shrink-0">Check In</Button>
-                                <Button className="flex-shrink-0" disabled>Post Match</Button>
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <Button variant="destructive" className="bg-red-500 flex-shrink-0" disabled>Deprecate</Button>

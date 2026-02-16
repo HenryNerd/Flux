@@ -128,52 +128,65 @@ export default function BatteryCard({ battery }: { battery: string }) {
 
     return (
         <div>
-            <Card className="m-3">
-                <CardHeader>
-                    <CardTitle className="text-red-300 font-bold text-2xl">
-                        {data.friendlyName || 'Battery'}
-                    </CardTitle>
-                    <CardDescription className="text-gray-500">
-                        {data.month} {data.season} | {data.batteryID}
-                    </CardDescription>
-                    <CardAction onClick={() => handleClick(battery)}>
-                        <Button className="bg-slate-200" variant="outline">Open</Button>
-                    </CardAction>
-                </CardHeader>
-                <CardFooter>
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button>Discharge Test</Button>
-                        </SheetTrigger>
-                        <SheetContent>
-                            <SheetHeader>
-                                <SheetTitle className="text-center">Add Discharge Test For {data.friendlyName}</SheetTitle>
-                            </SheetHeader>
-                            <form onSubmit={handleSubmit}>
-                                <div className="m-2">
-                                    <div className='mt-3'>
-                                        <Label className="mb-3" htmlFor="ah">Measured Ah</Label>
-                                        <Input value={mesuredAh} onChange={(e) => setMesuredAh(e.target.value)} id="ah" />
-                                    </div>
-                                    <div className='mt-3'>
-                                        <Label className="mb-3" htmlFor="wh">Measured Wh</Label>
-                                        <Input value={mesuredWh} onChange={(e) => setMesuredWh(e.target.value)} id="wh" />
-                                    </div>
-                                    <div className='mt-3'>
-                                        <Label className="mb-3" htmlFor="time">Test Time</Label>
-                                        <Input value={testTime} onChange={(e) => setTestTime(e.target.value)} id="time" placeholder="H:MM:SS" />
-                                    </div>
-                                </div>
-                                <SheetFooter>
-                                    <SheetClose asChild>
-                                        <Button type='submit'>Add Event</Button>
-                                    </SheetClose>
-                                </SheetFooter>
-                            </form>
-                        </SheetContent>
-                    </Sheet>
-                    <Button onClick={deploy} className='ml-2'>Deploy</Button>
-                </CardFooter>
+            <Card className="m-3 relative">
+                <Button 
+                    className="absolute top-4 right-4 bg-slate-200" 
+                    variant="outline"
+                    onClick={() => handleClick(battery)}
+                >
+                    Open
+                </Button>
+                <div className='flex gap-8 items-center'>
+                    <div>
+                        <CardHeader>
+                            <CardTitle className="text-red-300 font-bold text-2xl">
+                                {data.friendlyName || 'Battery'}
+                            </CardTitle>
+                            <CardDescription className="text-gray-500">
+                                {data.month} {data.season} | {data.batteryID}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardFooter>
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button className='mt-1'>Discharge Test</Button>
+                                </SheetTrigger>
+                                <SheetContent>
+                                    <SheetHeader>
+                                        <SheetTitle className="text-center">Add Discharge Test For {data.friendlyName}</SheetTitle>
+                                    </SheetHeader>
+                                    <form onSubmit={handleSubmit}>
+                                        <div className="m-2">
+                                            <div className='mt-3'>
+                                                <Label className="mb-3" htmlFor="ah">Measured Ah</Label>
+                                                <Input value={mesuredAh} onChange={(e) => setMesuredAh(e.target.value)} id="ah" />
+                                            </div>
+                                            <div className='mt-3'>
+                                                <Label className="mb-3" htmlFor="wh">Measured Wh</Label>
+                                                <Input value={mesuredWh} onChange={(e) => setMesuredWh(e.target.value)} id="wh" />
+                                            </div>
+                                            <div className='mt-3'>
+                                                <Label className="mb-3" htmlFor="time">Test Time</Label>
+                                                <Input value={testTime} onChange={(e) => setTestTime(e.target.value)} id="time" placeholder="H:MM:SS" />
+                                            </div>
+                                        </div>
+                                        <SheetFooter>
+                                            <SheetClose asChild>
+                                                <Button type='submit'>Add Event</Button>
+                                            </SheetClose>
+                                        </SheetFooter>
+                                    </form>
+                                </SheetContent>
+                            </Sheet>
+                            <Button onClick={deploy} className='ml-2 mt-1'>Deploy</Button>
+                        </CardFooter>
+                    </div>
+                    <div className="text-left">
+                        <h2 className="text-gray-700 text-lg font-semibold text-center">Capacity</h2>
+                        <h1 className="text-green-400 text-3xl font-semibold text-center">{data.capacity} Ah</h1>
+                        <h3 className="text-gray-600 text-lg text-center">(2 Tests)</h3>
+                    </div>
+                </div>
             </Card>
         </div>
     )
