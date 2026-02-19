@@ -37,7 +37,8 @@ import {
 } from "@/components/ui/dialog"
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge"
-import { Crown, Wrench } from "lucide-react"
+import { Crown, Wrench,  ShipWheel} from "lucide-react"
+
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Field,
@@ -204,6 +205,9 @@ export default function Home() {
           {authUserRole === "admin" && (
           <Badge className="m-2 bg-red-150 border-3 border-slate-100 text-slate-100"><Crown></Crown>Pit Admin</Badge>
           )}
+          {authUserRole === "drive" && (
+          <Badge className="m-2 bg-red-150 border-3 border-slate-100 text-slate-100"><ShipWheel></ShipWheel>Drive Team</Badge>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           <Drawer>
@@ -309,6 +313,17 @@ export default function Home() {
                         <FieldDescription>Can manange batteries</FieldDescription>
                       </FieldContent>
                       <RadioGroupItem value="member" id="member" />
+                    </Field>
+                  </FieldLabel>
+                                    <FieldLabel htmlFor="drive">
+                    <Field orientation="horizontal">
+                      <FieldContent>
+                        <FieldTitle><ShipWheel></ShipWheel> Drive Team</FieldTitle>
+                        <FieldDescription>
+                          Can see match info and battery info
+                        </FieldDescription>
+                      </FieldContent>
+                      <RadioGroupItem value="drive" id="drive" />
                     </Field>
                   </FieldLabel>
                 </RadioGroup>

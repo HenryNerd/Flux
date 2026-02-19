@@ -12,17 +12,31 @@ interface BatteryData {
     capacity: string
 }
 
-interface SlotStatus {
-    isCheckedIn: boolean
-}
-
-export default function RotationBatteryCard({ id }: { id: string }) {
+export default function RotationBatteryCard({ id, isOnline = true }: { id: string; isOnline?: boolean }) {
     const [data, setData] = useState<BatteryData | null>(null)
     const [loading, setLoading] = useState(true)
     const [isCheckedIn, setIsCheckedIn] = useState(false)
 
     useEffect(() => {
         const fetchData = async () => {
+            const cacheKey = `rotation-${id}`
+            
+            const cached = localStorage.getItem(cacheKey)
+            if (cached) {
+                try {
+                    const { data: cachedData, isCheckedIn: cachedCheckedIn } = JSON.parse(cached)
+                    setData(cachedData)
+                    setIsCheckedIn(cachedCheckedIn)
+                    setLoading(false)
+                } catch (e) {
+                    console.error('Error parsing cache:', e)
+                }
+            }
+            
+            if (!isOnline) {
+                return
+            }
+            
             try {
                 const batteryResponse = await fetch(`/api/battery/${id}`)
                 const batteryData = await batteryResponse.json()
@@ -31,18 +45,25 @@ export default function RotationBatteryCard({ id }: { id: string }) {
                 const batteryID = id.replace('0001-', '')
                 
                 let checkedIn = false
-                for (let slot = 1; slot <= 8; slot++) {
-                    const slotNum = slot.toString().padStart(2, '0')
-                    const slotResponse = await fetch(`/api/getSlot/${slotNum}`)
-                    const slotData = await slotResponse.json()
+                for (let i = 1; i <= 8; i++) {
+                    const slot = i.toString().padStart(2, '0')
+                    const cachedSlot = localStorage.getItem(`slot-${slot}-cache`)
                     
-                    if (slotData.latestCheckIn?.batteryID === batteryID && !slotData.isDeployed) {
-                        checkedIn = true
-                        break
+                    if (cachedSlot) {
+                        try {
+                            const slotData = JSON.parse(cachedSlot)
+                            if (slotData.latestCheckIn?.batteryID === batteryID && !slotData.isDeployed) {
+                                checkedIn = true
+                                break
+                            }
+                        } catch (e) {
+                            console.error('Error parsing slot cache:', e)
+                        }
                     }
                 }
                 
                 setIsCheckedIn(checkedIn)
+                localStorage.setItem(cacheKey, JSON.stringify({ data: batteryData, isCheckedIn: checkedIn }))
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching battery:', error)
@@ -52,9 +73,11 @@ export default function RotationBatteryCard({ id }: { id: string }) {
 
         fetchData()
         
-        const interval = setInterval(fetchData, 5000)
-        return () => clearInterval(interval)
-    }, [id])
+        if (isOnline) {
+            const interval = setInterval(fetchData, 5000)
+            return () => clearInterval(interval)
+        }
+    }, [id, isOnline])
 
     const bgColor = isCheckedIn ? 'bg-green-300' : 'bg-red-300'
 
