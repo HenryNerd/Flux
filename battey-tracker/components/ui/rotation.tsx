@@ -12,10 +12,11 @@ interface BatteryData {
     capacity: string
 }
 
-export default function RotationBatteryCard({ id, isOnline = true }: { id: string; isOnline?: boolean }) {
+export default function RotationBatteryCard({ id, isOnline = true, position }: { id: string; isOnline?: boolean; position?: number }) {
     const [data, setData] = useState<BatteryData | null>(null)
     const [loading, setLoading] = useState(true)
     const [isCheckedIn, setIsCheckedIn] = useState(false)
+    const [showBlink, setShowBlink] = useState(true)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,7 +46,7 @@ export default function RotationBatteryCard({ id, isOnline = true }: { id: strin
                 const batteryID = id.replace('0001-', '')
                 
                 let checkedIn = false
-                for (let i = 1; i <= 8; i++) {
+                for (let i = 1; i <= 10; i++) {
                     const slot = i.toString().padStart(2, '0')
                     const cachedSlot = localStorage.getItem(`slot-${slot}-cache`)
                     
@@ -79,10 +80,35 @@ export default function RotationBatteryCard({ id, isOnline = true }: { id: strin
         }
     }, [id, isOnline])
 
-    const bgColor = isCheckedIn ? 'bg-green-300' : 'bg-red-300'
+    // Blinking effect for top 3 red batteries
+    useEffect(() => {
+        const shouldBlink = !isCheckedIn && position !== undefined && position < 3
+        
+        if (shouldBlink) {
+            const blinkInterval = setInterval(() => {
+                setShowBlink(prev => !prev)
+            }, 1000)
+            
+            return () => clearInterval(blinkInterval)
+        } else {
+            setShowBlink(true)
+        }
+    }, [isCheckedIn, position])
+
+    const getBackgroundColor = () => {
+        if (isCheckedIn) {
+            return 'bg-green-300'
+        }
+        
+        if (position !== undefined && position < 3) {
+            return showBlink ? 'bg-red-300' : 'bg-red-400'
+        }
+        
+        return 'bg-red-300'
+    }
 
     return (
-        <Card className={bgColor}>
+        <Card className={`${getBackgroundColor()} transition-colors duration-200`}>
             <CardTitle className="w-full ml-3 font-normal">{data?.friendlyName || 'Loading...'}</CardTitle>
         </Card>
     )

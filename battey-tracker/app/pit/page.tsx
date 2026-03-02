@@ -120,7 +120,7 @@ export default function Pit() {
 
         setQueue(failedActions)
         localStorage.setItem('offline-queue', JSON.stringify(failedActions))
-        
+
         if (failedActions.length === 0) {
             toast.success('All queued actions synced')
             fetchBatteries()
@@ -143,18 +143,18 @@ export default function Pit() {
         if (fetchTimeoutRef.current) {
             clearTimeout(fetchTimeoutRef.current)
         }
-        
+
         fetchTimeoutRef.current = setTimeout(async () => {
             if (!isOnline) {
                 return
             }
-            
+
             try {
                 const response = await fetch('/api/getBattries')
                 const data = await response.json()
                 const flatKeys = data.keys.flat()
                 setKeys(flatKeys)
-                
+
                 const batteryDetails = await Promise.all(
                     flatKeys.map(async (key: string) => {
                         const batteryResponse = await fetch(`/api/battery/${key}`)
@@ -166,7 +166,7 @@ export default function Pit() {
                         }
                     })
                 )
-                
+
                 setBatteries(batteryDetails)
                 localStorage.setItem('batteries-cache', JSON.stringify(batteryDetails))
                 setLoading(false)
@@ -179,7 +179,7 @@ export default function Pit() {
 
     useEffect(() => {
         fetchBatteries()
-        
+
         if (isOnline) {
             const interval = setInterval(fetchBatteries, 5000)
             return () => {
@@ -189,7 +189,7 @@ export default function Pit() {
                 }
             }
         }
-        
+
         return () => {
             if (fetchTimeoutRef.current) {
                 clearTimeout(fetchTimeoutRef.current)
@@ -229,7 +229,7 @@ export default function Pit() {
                 toast.error("Failed to check in: " + result.error);
             }
         } catch (error) {
-            console.error("Error checking in:", error); 
+            console.error("Error checking in:", error);
             addToQueue({
                 type: 'checkin',
                 data: { slot: selectedSlot, battery: selectedBattery }
@@ -291,7 +291,7 @@ export default function Pit() {
                 <Card className="m-4 gap-2 pl-3 pr-3 pt-2 pb-2 bg-amber-300 border-0">
                     <CardTitle>No Internet Connection</CardTitle>
                     <CardDescription>
-                        Changes will be transmitted when internet is available 
+                        Changes will be transmitted when internet is available
                         {queue.length > 0 && ` (${queue.length} action${queue.length > 1 ? 's' : ''} queued)`}
                     </CardDescription>
                 </Card>
@@ -324,14 +324,18 @@ export default function Pit() {
                             <BatteryCard slot="07" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
                             <BatteryCard slot="08" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
                         </div>
+                        <div className="flex gap-4">
+                            <BatteryCard slot="09" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
+                            <BatteryCard slot="10" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
+                        </div>
                     </div>
                 </Card>
                 <Card className="m-4 w-1/4 p-0">
                     <div className="flex justify-between items-center">
                         <CardTitle className="mt-3 ml-3 text-lg">Battery Rotation</CardTitle>
-                        <Button 
-                            variant="outline" 
-                            className="mt-2 mr-3" 
+                        <Button
+                            variant="outline"
+                            className="mt-2 mr-3"
                             onClick={skipBattery}
                             disabled={keys.length === 0}
                         >
@@ -341,7 +345,12 @@ export default function Pit() {
                     <div className="gap-0">
                         {
                             keys.map((key, index) => (
-                                <RotationBatteryCard key={key} id={key} isOnline={isOnline}></RotationBatteryCard>
+                                <RotationBatteryCard
+                                    key={key}
+                                    id={key}
+                                    isOnline={isOnline}
+                                    position={index}
+                                />
                             ))
                         }
                     </div>
@@ -383,6 +392,8 @@ export default function Pit() {
                             <ToggleGroupItem value="06">6</ToggleGroupItem>
                             <ToggleGroupItem value="07">7</ToggleGroupItem>
                             <ToggleGroupItem value="08">8</ToggleGroupItem>
+                            <ToggleGroupItem value="09">9</ToggleGroupItem>
+                            <ToggleGroupItem value="10">10</ToggleGroupItem>
                         </ToggleGroup>
                         <Button
                             className="bg-yellow-300 mt-4 w-full hover:bg-yellow-400"
