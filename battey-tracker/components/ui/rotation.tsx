@@ -103,6 +103,10 @@ export default function RotationBatteryCard({ id, isOnline = true, position }: {
         if (position !== undefined && position < 3) {
             return showBlink ? 'bg-red-300' : 'bg-red-400'
         }
+
+        if (position !== undefined && position >= 3 && position < 6) {
+            return showBlink ? 'bg-amber-400' : 'bg-transparent border-2 border-amber-400'
+        }
         
         return 'bg-red-300'
     }
