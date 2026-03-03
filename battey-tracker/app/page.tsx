@@ -40,7 +40,7 @@ import BatteryScanner from "@/components/ui/qrcodescanner";
 
 export default function Home() {
   const router = useRouter();
-  const [keys, setKeys] = useState([])
+  const [keys, setKeys] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [season, setseason] = useState('');
   const [mounth, setmounth] = useState('');
@@ -292,7 +292,11 @@ export default function Home() {
         </div>
       </Card>
       {
-        keys.map((key, index) => (
+        keys.sort((a, b) => {
+          const idA = parseInt(a.split('-')[1] || '0');
+          const idB = parseInt(b.split('-')[1] || '0');
+          return idA - idB;
+        }).map((key, index) => (
           <BatteryCard key={index} battery={key} />
         ))
       }
