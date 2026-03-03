@@ -181,7 +181,7 @@ export default function Pit() {
         fetchBatteries()
 
         if (isOnline) {
-            const interval = setInterval(fetchBatteries, 5000)
+            const interval = setInterval(fetchBatteries, 2000)
             return () => {
                 clearInterval(interval)
                 if (fetchTimeoutRef.current) {
@@ -309,24 +309,24 @@ export default function Pit() {
                     <CardTitle className="text-lg mb-4">Pit Charging Station</CardTitle>
                     <div className="flex flex-col items-center justify-center gap-4">
                         <div className="flex gap-4">
-                            <BatteryCard slot="01" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
-                            <BatteryCard slot="02" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
+                            <BatteryCard slot="01" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
+                            <BatteryCard slot="02" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="03" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
-                            <BatteryCard slot="04" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
+                            <BatteryCard slot="03" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
+                            <BatteryCard slot="04" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="05" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
-                            <BatteryCard slot="06" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
+                            <BatteryCard slot="05" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
+                            <BatteryCard slot="06" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="07" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
-                            <BatteryCard slot="08" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
+                            <BatteryCard slot="07" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
+                            <BatteryCard slot="08" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
                         </div>
                         <div className="flex gap-4">
-                            <BatteryCard slot="09" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
-                            <BatteryCard slot="10" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue}></BatteryCard>
+                            <BatteryCard slot="09" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
+                            <BatteryCard slot="10" onRotationUpdate={fetchBatteries} isOnline={isOnline} addToQueue={addToQueue} topBatteryKey={keys[0]}></BatteryCard>
                         </div>
                     </div>
                 </Card>

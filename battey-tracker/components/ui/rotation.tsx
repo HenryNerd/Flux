@@ -75,7 +75,7 @@ export default function RotationBatteryCard({ id, isOnline = true, position }: {
         fetchData()
         
         if (isOnline) {
-            const interval = setInterval(fetchData, 5000)
+            const interval = setInterval(fetchData, 1000)
             return () => clearInterval(interval)
         }
     }, [id, isOnline])

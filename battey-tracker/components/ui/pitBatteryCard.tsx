@@ -84,12 +84,14 @@ export default function BatteryCard({
     slot, 
     onRotationUpdate, 
     isOnline = true,
-    addToQueue
+    addToQueue,
+    topBatteryKey
 }: { 
     slot: string
     onRotationUpdate?: () => void
     isOnline?: boolean
     addToQueue?: (action: Omit<QueuedAction, 'id' | 'timestamp'>) => void
+    topBatteryKey?: string
 }) {
     const [slotData, setSlotData] = useState<SlotData | null>(null)
     const [batteryData, setBatteryData] = useState<BatteryData | null>(null)
@@ -148,7 +150,7 @@ export default function BatteryCard({
         fetchSlotData()
 
         if (isOnline) {
-            const interval = setInterval(fetchSlotData, 5000)
+            const interval = setInterval(fetchSlotData, 1000)
             return () => clearInterval(interval)
         }
     }, [slot, isOnline])
@@ -191,7 +193,10 @@ export default function BatteryCard({
             localStorage.setItem(`slot-${slot}-cache`, JSON.stringify(updatedSlotData));
             setBatteryData(null);
             
-            updateRotationOrderOffline(batteryKey);
+            // Only update rotation if this is the top battery
+            if (topBatteryKey && batteryKey === topBatteryKey) {
+                updateRotationOrderOffline(batteryKey);
+            }
             
             if (addToQueue) {
                 addToQueue({
@@ -201,10 +206,6 @@ export default function BatteryCard({
             }
             
             toast.success("Battery deploy queued for sync");
-            
-            if (onRotationUpdate) {
-                onRotationUpdate();
-            }
             return;
         }
 
@@ -222,7 +223,8 @@ export default function BatteryCard({
                 localStorage.setItem(`slot-${slot}-cache`, JSON.stringify(updatedSlotData));
                 setBatteryData(null);
 
-                if (onRotationUpdate) {
+                // Only update rotation if this is the top battery
+                if (topBatteryKey && batteryKey === topBatteryKey && onRotationUpdate) {
                     onRotationUpdate();
                 }
             } else {
@@ -236,7 +238,10 @@ export default function BatteryCard({
             localStorage.setItem(`slot-${slot}-cache`, JSON.stringify(updatedSlotData));
             setBatteryData(null);
             
-            updateRotationOrderOffline(batteryKey);
+            // Only update rotation if this is the top battery
+            if (topBatteryKey && batteryKey === topBatteryKey) {
+                updateRotationOrderOffline(batteryKey);
+            }
             
             if (addToQueue) {
                 addToQueue({
@@ -246,10 +251,6 @@ export default function BatteryCard({
             }
             
             toast.warning("Battery deploy queued for sync");
-            
-            if (onRotationUpdate) {
-                onRotationUpdate();
-            }
         }
     };
 

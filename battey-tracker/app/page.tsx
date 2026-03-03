@@ -16,17 +16,6 @@ import {
 } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Scanner } from '@yudiel/react-qr-scanner';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
 import {
   Dialog,
   DialogContent,
@@ -38,7 +27,6 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge"
 import { Crown, Wrench,  ShipWheel} from "lucide-react"
-
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Field,
@@ -48,6 +36,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field"
 import { toast } from "sonner"
+import BatteryScanner from "@/components/ui/qrcodescanner";
 
 export default function Home() {
   const router = useRouter();
@@ -176,26 +165,6 @@ export default function Home() {
   return (
     <div className="bg-white min-h-screen">
       <Navbar></Navbar>
-      {isPreview && (
-        <Dialog defaultOpen={true}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Development Build</DialogTitle>
-              <DialogDescription>
-                This site contains features that are in beta and have not been tested or verified.
-                Some features may be broken. If you want a reliable experience, please proceed
-                to the normal site.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col gap-4 mt-4">
-              <Button onClick={normalSite}>Go to Normal Site</Button>
-              <DialogClose asChild>
-                <Button variant="ghost">Continue to Beta Site</Button>
-              </DialogClose>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
       <Card className="m-4 p-4 bg-red-300">
         <div className="flex gap-2">
           <h1 className="text-4xl font-medium font-sans text-slate-100">Hey, {authFirstName}</h1>
@@ -210,21 +179,7 @@ export default function Home() {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          <Drawer>
-            <DrawerTrigger asChild>
-              <Button className="bg-slate-100 text-color-black" variant="outline">Scan Battery</Button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <DrawerTitle>Qr Code Scaner</DrawerTitle>
-              <Scanner
-                onScan={(result) => console.log(result)}
-                components={{
-                  torch: true,
-                  zoom: true,
-                }}
-              />
-            </DrawerContent>
-          </Drawer>
+          <BatteryScanner></BatteryScanner>
           <Sheet>
             <SheetTrigger asChild>
               <Button className="bg-slate-100" variant="outline">New Battery</Button>
