@@ -34,6 +34,13 @@ interface BatteryData {
     capacity: string
 }
 
+interface DischargeTest {
+    mesuredAh: string
+    mesuredWh: string
+    testTime: string
+    timestamp: string
+}
+
 
 export default function BatteryCard({ battery }: { battery: string }) {
     const [data, setData] = useState<BatteryData | null>(null)
@@ -41,6 +48,7 @@ export default function BatteryCard({ battery }: { battery: string }) {
     const [mesuredAh, setMesuredAh] = useState('');
     const [mesuredWh, setMesuredWh] = useState('');
     const [testTime, setTestTime] = useState('');
+    const [dischargeTests, setDischargeTests] = useState<DischargeTest[]>([])
     const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -76,17 +84,61 @@ export default function BatteryCard({ battery }: { battery: string }) {
     }
 
     useEffect(() => {
-        fetch(`/api/battery/${battery}`)
-            .then(res => res.json())
-            .then(batteryData => {
+        const fetchBatteryData = async () => {
+            try {
+                // Fetch battery data
+                const batteryRes = await fetch(`/api/battery/${battery}`)
+                const batteryData = await batteryRes.json()
                 setData(batteryData)
+
+                // Extract battery ID to fetch events
+                const batteryId = battery.split('-')[1]
+                
+                // Fetch battery events
+                const eventsRes = await fetch(`/api/batteryEvents/${batteryId}`)
+                const eventsData = await eventsRes.json()
+                
+                console.log('Events fetched:', eventsData)
+                console.log('Battery ID:', batteryId)
+                
+                // Filter for discharge test events (0002 prefix)
+                if (eventsData.keys && Array.isArray(eventsData.keys)) {
+                    const tests: DischargeTest[] = []
+                    for (const eventKey of eventsData.keys) {
+                        console.log('Processing event:', eventKey)
+                        const keyParts = eventKey.split('-')
+                        // 0002 is the discharge test event type
+                        if (keyParts[0] === '0002' && keyParts[1] === batteryId) {
+                            console.log('Found discharge test, fetching data for:', eventKey)
+                            try {
+                                const testRes = await fetch(`/api/getEvent/${eventKey}`)
+                                const testData = await testRes.json()
+                                console.log('Test data:', testData)
+                                tests.push({
+                                    mesuredAh: testData.mesuredAh || '',
+                                    mesuredWh: testData.mesuredWh || '',
+                                    testTime: testData.testTime || '',
+                                    timestamp: testData.timestamp || ''
+                                })
+                            } catch (e) {
+                                console.error('Error fetching test data:', e)
+                            }
+                        }
+                    }
+                    // Sort by timestamp descending to get most recent first
+                    tests.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                    console.log('Final tests:', tests)
+                    setDischargeTests(tests)
+                }
+                
                 setLoading(false)
-                console.log(batteryData)
-            })
-            .catch(error => {
-                console.error('Error fetching battery:', error)
+            } catch (error) {
+                console.error('Error fetching battery data:', error)
                 setLoading(false)
-            })
+            }
+        }
+
+        fetchBatteryData()
     }, [battery])
 
     if (loading) return <div>
@@ -181,10 +233,29 @@ export default function BatteryCard({ battery }: { battery: string }) {
                             <Button onClick={deploy} className='ml-2 mt-1'>Deploy</Button>
                         </CardFooter>
                     </div>
-                    <div className="text-left">
+                    <div className="text-left hidden md:block">
                         <h2 className="text-gray-700 text-lg font-semibold text-center">Capacity</h2>
-                        <h1 className="text-green-400 text-3xl font-semibold text-center">{data.capacity} Ah</h1>
-                        <h3 className="text-gray-600 text-lg text-center">(2 Tests)</h3>
+                        {dischargeTests.length > 0 ? (
+                            (() => {
+                                const ah = parseFloat(dischargeTests[0].mesuredAh);
+                                let colorClass = 'text-red-500';
+                                if (ah >= 18.25) {
+                                    colorClass = 'text-green-400';
+                                } else if (ah >= 18) {
+                                    colorClass = 'text-amber-500';
+                                }
+                                return (
+                                    <h1 className={`${colorClass} text-3xl font-semibold text-center`}>
+                                        {ah.toFixed(2)} Ah
+                                    </h1>
+                                );
+                            })()
+                        ) : (
+                            <h1 className="text-green-400 text-3xl font-semibold text-center">
+                                {parseFloat(data.capacity).toFixed(2)} Ah
+                            </h1>
+                        )}
+                        <h3 className="text-gray-600 text-lg text-center">({dischargeTests.length} Test{dischargeTests.length !== 1 ? 's' : ''})</h3>
                     </div>
                 </div>
             </Card>
