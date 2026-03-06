@@ -15,6 +15,16 @@ mesuredWh - From Test Data
 testTime - From Test Data
 timestamp - timestamp of the event being taken
 
+## 0003 Deploy Battery
+battery - The Battery's ID (also known as the nfc id)
+timestamp - timestamp of the event being taken
+
+## 0004 Battery Checked In
+### 0004-S{Slot$}-{batteryID}
+battery - The Battery's ID (also known as the nfc id)
+slot - The slot the battery was placed in
+timestamp - timestamp of the event being taken
+
 ## 9998 User
 username - Identifyer of the user and how a user logs in
 firstName - The user's first name
