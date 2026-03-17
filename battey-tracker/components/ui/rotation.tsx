@@ -80,7 +80,6 @@ export default function RotationBatteryCard({ id, isOnline = true, position }: {
         }
     }, [id, isOnline])
 
-    // Blinking effect for top 3 red batteries
     useEffect(() => {
         const shouldBlink = !isCheckedIn && position !== undefined && position < 3
         
@@ -104,7 +103,7 @@ export default function RotationBatteryCard({ id, isOnline = true, position }: {
             return showBlink ? 'bg-red-300' : 'bg-red-400'
         }
 
-        if (position !== undefined && position >= 3 && position < 6) {
+        if (position !== undefined && position >= 3) {
             return showBlink ? 'bg-amber-400' : 'bg-transparent border-2 border-amber-400'
         }
         
