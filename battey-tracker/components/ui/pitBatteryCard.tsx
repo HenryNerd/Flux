@@ -16,6 +16,10 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "./button"
 import { toast } from "sonner"
+import { Input } from "@/components/ui/input"
+import { Field, FieldLabel } from "@/components/ui/field"
+import { TriangleAlert } from "lucide-react"
+
 
 interface LatestCheckIn {
     key: string
@@ -80,13 +84,13 @@ function TimeElapsed({ timestamp }: { timestamp: string }) {
     return <span className="text-xs text-gray-600">{elapsed}</span>
 }
 
-export default function BatteryCard({ 
-    slot, 
-    onRotationUpdate, 
+export default function BatteryCard({
+    slot,
+    onRotationUpdate,
     isOnline = true,
     addToQueue,
     topBatteryKey
-}: { 
+}: {
     slot: string
     onRotationUpdate?: () => void
     isOnline?: boolean
@@ -96,17 +100,18 @@ export default function BatteryCard({
     const [slotData, setSlotData] = useState<SlotData | null>(null)
     const [batteryData, setBatteryData] = useState<BatteryData | null>(null)
     const [loading, setLoading] = useState(true)
+    const [resistance, setResistance] = useState('')
 
     useEffect(() => {
         const fetchSlotData = async () => {
             const slotCacheKey = `slot-${slot}-cache`
-            
+
             const cachedSlot = localStorage.getItem(slotCacheKey)
             if (cachedSlot) {
                 try {
                     const cached = JSON.parse(cachedSlot)
                     setSlotData(cached)
-                    
+
                     if (cached.latestCheckIn?.batteryID) {
                         const cachedBattery = localStorage.getItem(`battery-${cached.latestCheckIn.batteryID}-cache`)
                         if (cachedBattery) {
@@ -118,15 +123,15 @@ export default function BatteryCard({
                     console.error('Error parsing cache:', e)
                 }
             }
-            
+
             if (!isOnline) {
                 return
             }
-            
+
             try {
                 const slotResponse = await fetch(`/api/getSlot/${slot}`)
                 const slotResult = await slotResponse.json()
-                
+
                 if (slotResult.success !== false) {
                     setSlotData(slotResult)
                     localStorage.setItem(slotCacheKey, JSON.stringify(slotResult))
@@ -139,7 +144,7 @@ export default function BatteryCard({
                     } else {
                         setBatteryData(null)
                     }
-                    
+
                     setLoading(false)
                 }
             } catch (error) {
@@ -159,19 +164,19 @@ export default function BatteryCard({
         try {
             const cachedBatteries = localStorage.getItem('batteries-cache')
             if (!cachedBatteries) return
-            
+
             const batteries = JSON.parse(cachedBatteries)
             const batteryKeys = batteries.map((b: any) => b.key)
-            
+
             const index = batteryKeys.indexOf(batteryKey)
             if (index > -1) {
                 batteryKeys.splice(index, 1)
                 batteryKeys.push(batteryKey)
-                
-                const reorderedBatteries = batteryKeys.map((key: string) => 
+
+                const reorderedBatteries = batteryKeys.map((key: string) =>
                     batteries.find((b: any) => b.key === key)
                 )
-                
+
                 localStorage.setItem('batteries-cache', JSON.stringify(reorderedBatteries))
             }
         } catch (e) {
@@ -192,19 +197,19 @@ export default function BatteryCard({
             setSlotData(updatedSlotData);
             localStorage.setItem(`slot-${slot}-cache`, JSON.stringify(updatedSlotData));
             setBatteryData(null);
-            
-            // Only update rotation if this is the top battery
+            setResistance('');
+
             if (topBatteryKey && batteryKey === topBatteryKey) {
                 updateRotationOrderOffline(batteryKey);
             }
-            
+
             if (addToQueue) {
                 addToQueue({
                     type: 'deploy',
                     data: { battery: batteryKey }
                 });
             }
-            
+
             toast.success("Battery deploy queued for sync");
             return;
         }
@@ -217,13 +222,13 @@ export default function BatteryCard({
 
             if (result.success) {
                 toast.success("Battery Checked Out");
-                
+
                 const updatedSlotData = { ...slotData, isDeployed: true };
                 setSlotData(updatedSlotData);
                 localStorage.setItem(`slot-${slot}-cache`, JSON.stringify(updatedSlotData));
                 setBatteryData(null);
+                setResistance('');
 
-                // Only update rotation if this is the top battery
                 if (topBatteryKey && batteryKey === topBatteryKey && onRotationUpdate) {
                     onRotationUpdate();
                 }
@@ -232,24 +237,24 @@ export default function BatteryCard({
             }
         } catch (error) {
             console.error("Error checking out:", error);
-            
+
             const updatedSlotData = { ...slotData, isDeployed: true };
             setSlotData(updatedSlotData);
             localStorage.setItem(`slot-${slot}-cache`, JSON.stringify(updatedSlotData));
             setBatteryData(null);
-            
-            // Only update rotation if this is the top battery
+            setResistance('');
+
             if (topBatteryKey && batteryKey === topBatteryKey) {
                 updateRotationOrderOffline(batteryKey);
             }
-            
+
             if (addToQueue) {
                 addToQueue({
                     type: 'deploy',
                     data: { battery: batteryKey }
                 });
             }
-            
+
             toast.warning("Battery deploy queued for sync");
         }
     };
@@ -301,8 +306,39 @@ export default function BatteryCard({
                             </CardDescription>
                         </div>
                     </Card>
+                    <div className="p-2">
+                        {parseFloat(resistance) >= 0.018 &&  parseFloat(resistance) < 0.02 &&(
+                            <Card className="p-3 mb-5 bg-amber-300">
+                                <CardTitle className="text-xl"><TriangleAlert />Warning</CardTitle>
+                                <CardDescription>The Internal Resistance of this battery is pretty high. Consider not deploying this battery.</CardDescription>
+                            </Card>
+                        )}
+                        {parseFloat(resistance) >= 0.02 &&(
+                            <Card className="p-3 mb-5 bg-red-300">
+                                <CardTitle className="text-xl"><TriangleAlert />Danger</CardTitle>
+                                <CardDescription>The Internal Resistance of this battery is to high. Do not deploy this battery to a match.</CardDescription>
+                            </Card>
+                        )}
+                        <Field>
+                            <FieldLabel>Battery Beak Reading: </FieldLabel>
+                            <Input
+                                id="resistance"
+                                placeholder="Internal Resistance"
+                                value={resistance}
+                                onChange={(e) => setResistance(e.target.value)}
+                            />
+                        </Field>
+                    </div>
                     <SheetClose asChild>
-                        <Button className="bg-slate-200 m-3" onClick={deploy} variant="outline">
+                        <Button
+                            className="bg-slate-200 m-3 h-10 px-4"
+                            onClick={() => {
+                                deploy()
+                                setResistance('')
+                            }}
+                            variant="outline"
+                            disabled={!resistance.trim()}
+                        >
                             Deploy
                         </Button>
                     </SheetClose>
